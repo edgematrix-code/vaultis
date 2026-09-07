@@ -7,13 +7,13 @@ import LightTunnel from '@/components/LightTunnel.vue';
 const router = useRouter();
 
 const supportedCoins = [
-    { symbol: 'BTC', src: '/brand/coins/btc.png' },
-    { symbol: 'ETH', src: '/brand/coins/eth.png' },
-    { symbol: 'USDT', src: '/brand/coins/usdt.png' },
-    { symbol: 'SOL', src: '/brand/coins/sol.png' },
-    { symbol: 'BNB', src: '/brand/coins/bnb.png' },
-    { symbol: 'USDC', src: '/brand/coins/usdc.png' },
-    { symbol: 'TRX', src: '/brand/coins/trx.png' },
+    { symbol: 'BTC', src: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg' },
+    { symbol: 'ETH', src: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
+    { symbol: 'USDT', src: 'https://cryptologos.cc/logos/tether-usdt-logo.svg' },
+    { symbol: 'SOL', src: 'https://cryptologos.cc/logos/solana-sol-logo.svg' },
+    { symbol: 'BNB', src: 'https://cryptologos.cc/logos/binancecoin-bnb-logo.svg' },
+    { symbol: 'USDC', src: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg' },
+    { symbol: 'TRX', src: 'https://cryptologos.cc/logos/tron-trx-logo.svg' },
 ];
 
 const features = [
@@ -177,7 +177,7 @@ function register() { return '/register'; }
                             <img
                                 :src="coin.src"
                                 :alt="`${coin.symbol} logo`"
-                                class="size-6 rounded-full object-contain"
+                                class="size-5 object-contain"
                                 loading="lazy"
                             />
                             <span

@@ -11,7 +11,7 @@ const supportedCoins = [
     { symbol: 'ETH', src: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
     { symbol: 'USDT', src: 'https://cryptologos.cc/logos/tether-usdt-logo.svg' },
     { symbol: 'SOL', src: 'https://cryptologos.cc/logos/solana-sol-logo.svg' },
-    { symbol: 'BNB', src: 'https://cryptologos.cc/logos/binancecoin-bnb-logo.svg' },
+    { symbol: 'BNB', src: 'https://cryptologos.cc/logos/bnb-bnb-logo.svg' },
     { symbol: 'USDC', src: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg' },
     { symbol: 'TRX', src: 'https://cryptologos.cc/logos/tron-trx-logo.svg' },
 ];

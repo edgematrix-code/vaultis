@@ -16,6 +16,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Bitcoin',
         color: '#F2A93B',
         decimals: 8,
+        logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg',
     },
     eth: {
         id: 'eth',
@@ -24,6 +25,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Ethereum',
         color: '#8FA3D9',
         decimals: 6,
+        logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg',
     },
     bsc: {
         id: 'bsc',
@@ -32,6 +34,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'BNB Smart Chain',
         color: '#E7B65C',
         decimals: 6,
+        logo: 'https://cryptologos.cc/logos/bnb-bnb-logo.svg',
     },
     trx: {
         id: 'trx',
@@ -40,6 +43,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'TRON',
         color: '#E2564F',
         decimals: 4,
+        logo: 'https://cryptologos.cc/logos/tron-trx-logo.svg',
     },
     usdt: {
         id: 'usdt',
@@ -48,6 +52,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Ethereum',
         color: '#3FBF8F',
         decimals: 2,
+        logo: 'https://cryptologos.cc/logos/tether-usdt-logo.svg',
     },
     usdc: {
         id: 'usdc',
@@ -56,6 +61,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Ethereum',
         color: '#4C8DD9',
         decimals: 2,
+        logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg',
     },
 };
 

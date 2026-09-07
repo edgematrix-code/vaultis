@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke-width="2" stroke-linecap="round">
+    <!-- top bar: bright white with mint 3D depth -->
+    <line x1="3" y1="5.5" x2="21" y2="5.5" stroke="#ffffff" stroke-width="2"/>
+    <line x1="3" y1="7.5" x2="21" y2="7.5" stroke="#42d78f" stroke-width="2" opacity="0.5"/>
+
+    <!-- middle bar: bright white with mint 3D depth -->
+    <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="2"/>
+    <line x1="3" y1="14" x2="21" y2="14" stroke="#42d78f" stroke-width="2" opacity="0.5"/>
+
+    <!-- bottom bar: bright white with mint 3D depth -->
+    <line x1="3" y1="18.5" x2="21" y2="18.5" stroke="#ffffff" stroke-width="2"/>
+    <line x1="3" y1="20.5" x2="21" y2="20.5" stroke="#42d78f" stroke-width="2" opacity="0.5"/>
+  </g>
+</svg>

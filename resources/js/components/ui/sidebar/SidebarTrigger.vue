@@ -29,8 +29,11 @@ const { isMobile, state, toggleSidebar } = useSidebar()
     )"
     @click="toggleSidebar"
   >
-    <Menu v-if="isMobile || state === 'collapsed'"
-        class="size-5 text-vault-ink"
+    <img
+        v-if="isMobile || state === 'collapsed'"
+        src="/hamburger_icon_3d_v2.svg"
+        alt="Open sidebar"
+        class="size-6"
     />
     <X v-else
         class="size-5 text-vault-ink"

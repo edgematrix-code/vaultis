@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="size-5">
+  <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <!-- top bar with 3D depth (shadow offset) -->
+    <line x1="3" y1="5" x2="21" y2="5" stroke="#42d78f" stroke-width="2.2"/>
+    <line x1="3" y1="7" x2="21" y2="7" stroke="#42d78f" stroke-width="2.2" opacity="0.35"/>
+    <line x1="3" y1="5" x2="21" y2="5" stroke="currentColor" stroke-width="1.8"/>
+
+    <!-- middle bar with 3D depth -->
+    <line x1="3" y1="12" x2="21" y2="12" stroke="#42d78f" stroke-width="2.2"/>
+    <line x1="3" y1="14" x2="21" y2="14" stroke="#42d78f" stroke-width="2.2" opacity="0.35"/>
+    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/>
+
+    <!-- bottom bar with 3D depth -->
+    <line x1="3" y1="19" x2="21" y2="19" stroke="#42d78f" stroke-width="2.2"/>
+    <line x1="3" y1="21" x2="21" y2="21" stroke="#42d78f" stroke-width="2.2" opacity="0.35"/>
+    <line x1="3" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="1.8"/>
+  </g>
+</svg>

@@ -68,6 +68,21 @@ const totalChangePct = computed(() =>
             <div
                 class="border-border bg-card rounded-2xl border p-6 lg:col-span-2"
             >
+                <!-- Security badge -->
+                <div class="mb-3 flex items-center justify-between">
+                    <img
+                        src="/security_transparent.png"
+                        alt="Security"
+                        class="size-18 object-contain sm:size-12"
+                    />
+                    <Link
+                        to="/wallet"
+                        class="text-vault-mint flex items-center gap-1 text-xs font-medium hover:underline"
+                    >
+                        View wallet
+                        <ArrowRight class="size-3.5" />
+                    </Link>
+                </div>
                 <div class="mb-2 flex items-center justify-between">
                     <p class="text-vault-ink-dim text-sm">Assets</p>
                     <Link
@@ -105,6 +120,15 @@ const totalChangePct = computed(() =>
                         :transaction="t"
                     />
                 </div>
+            </div>
+
+            <!-- Bank scene illustration -->
+            <div class="hidden lg:block border-border bg-card rounded-2xl border p-4">
+                <img
+                    src="/bank_scene_transparent.png"
+                    alt="Vaultis secure banking"
+                    class="h-full w-full object-contain max-h-[12rem]"
+                />
             </div>
         </div>
     </div>

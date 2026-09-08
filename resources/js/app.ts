@@ -13,6 +13,7 @@ import WalletOverviewPage from '@/pages/wallet/Overview.vue';
 import WalletDepositPage from '@/pages/wallet/Deposit.vue';
 import WalletReceivePage from '@/pages/wallet/Receive.vue';
 import WalletWithdrawPage from '@/pages/wallet/Withdraw.vue';
+import WalletSwapPage from '@/pages/wallet/Swap.vue';
 import TransactionsIndexPage from '@/pages/transactions/Index.vue';
 import TransactionShowPage from '@/pages/transactions/Show.vue';
 import ProfilePage from '@/pages/settings/Profile.vue';
@@ -63,6 +64,7 @@ const routes = [
     { path: '/wallet', name: 'wallet/Overview', component: WalletOverviewPage },
     { path: '/wallet/deposit', name: 'wallet/Deposit', component: WalletDepositPage },
     { path: '/wallet/receive', name: 'wallet/Receive', component: WalletReceivePage },
+    { path: '/wallet/swap', name: 'wallet/Swap', component: WalletSwapPage },
     { path: '/wallet/withdraw', name: 'wallet/Withdraw', component: WalletWithdrawPage },
     { path: '/transactions', name: 'transactions/Index', component: TransactionsIndexPage },
     { path: '/transactions/:id', name: 'transactions/Show', component: TransactionShowPage },
@@ -78,8 +80,12 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/'),
     routes,
+    scrollBehavior(_to, _from, savedPosition) {
+        if (savedPosition) return savedPosition;
+        return { top: 0 };
+    },
 });
 
 router.beforeEach((to, _from, next) => {

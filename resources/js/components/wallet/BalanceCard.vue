@@ -49,6 +49,12 @@ defineProps<{
         </svg>
 
         <div class="relative flex flex-col gap-6">
+            <!-- Vault brand mark in top-right of card -->
+            <img
+                src="/vault_transparent.png"
+                alt="Vaultis"
+                class="absolute top-4 right-4 size-24 object-contain hidden sm:block"
+            />
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <p class="text-vault-ink-dim text-sm">Portfolio balance</p>

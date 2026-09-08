@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Link } from '@/lib/inertia-shim';
-import { ArrowDownToLine, ArrowUpFromLine, ScanLine } from '@lucide/vue';
 </script>
 
 <template>
@@ -15,21 +14,44 @@ import { ArrowDownToLine, ArrowUpFromLine, ScanLine } from '@lucide/vue';
                 class="brand-label bg-vault-mint text-primary-foreground flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
             >
                 Deposit
-                <ArrowDownToLine class="size-4" />
+                <img
+                    src="/growth_transparent.png"
+                    alt="Deposit"
+                    class="size-16 object-contain sm:size-12"
+                />
             </Link>
             <Link
                 href="/wallet/withdraw"
                 class="brand-label border-border bg-secondary text-secondary-foreground flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
             >
                 Transfer
-                <ArrowUpFromLine class="size-4" />
+                <img
+                    src="/wallet_transparent.png"
+                    alt="Transfer"
+                    class="size-16 object-contain sm:size-12"
+                />
             </Link>
             <Link
                 href="/wallet/receive"
                 class="brand-label border-border text-foreground flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
             >
                 Receive
-                <ScanLine class="size-4" />
+                <img
+                    src="/analytics_transparent.png"
+                    alt="Receive"
+                    class="size-16 object-contain sm:size-12"
+                />
+            </Link>
+            <Link
+                href="/wallet/swap"
+                class="brand-label border-border bg-vault-forest/10 text-vault-forest flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
+            >
+                Swap
+                <img
+                    src="/coin_swap_transparent.png"
+                    alt="Swap"
+                    class="size-16 object-contain sm:size-12"
+                />
             </Link>
         </div>
     </div>

@@ -45,6 +45,15 @@ const features = [
 
 function login() { return '/login'; }
 function register() { return '/register'; }
+
+const supportedCountries = [
+    { name: 'USA', code: 'us', src: '/usa_flag_transparent.png' },
+    { name: 'UK', code: 'uk', src: '/uk_flag_transparent.png' },
+    { name: 'Germany', code: 'de', src: '/germany_flag_transparent.png' },
+    { name: 'Spain', code: 'es', src: '/spain_flag_transparent.png' },
+    { name: 'Portugal', code: 'pt', src: '/portugal_flag_transparent.png' },
+    { name: 'Canada', code: 'ca', src: '/canada_flag_transparent.png' },
+];
 </script>
 
 <template>
@@ -52,16 +61,23 @@ function register() { return '/register'; }
         <header
             class="flex w-full items-center justify-between px-6 py-5 sm:px-10 sm:py-6 lg:px-16"
         >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-between w-full">
+                <div class="flex items-center gap-2">
+                    <img
+                        src="/brand/vaultis-mark.png"
+                        alt="Vaultis"
+                        class="size-7 object-contain sm:size-8"
+                    />
+                    <span
+                        class="font-display text-lg font-bold tracking-tight sm:text-2xl"
+                        >Vaultis</span
+                    >
+                </div>
                 <img
-                    src="/brand/vaultis-mark.png"
-                    alt="Vaultis"
-                    class="size-7 object-contain sm:size-8"
+                    src="/usa_flag_transparent.png"
+                    alt="USA"
+                    class="size-7 object-contain sm:size-5 ml-6 sm:ml-0"
                 />
-                <span
-                    class="font-display text-lg font-bold tracking-tight sm:text-2xl"
-                    >Vaultis</span
-                >
             </div>
 
             <nav class="flex items-center gap-1.5 text-xs sm:gap-2 sm:text-sm">
@@ -166,26 +182,45 @@ function register() { return '/register'; }
                         </Link>
                     </div>
 
-                    <div
-                        class="mt-12 flex flex-wrap items-center justify-center gap-2.5"
+                <div
+                    class="mt-12 flex flex-wrap items-center justify-center gap-2.5"
+                >
+                    <span
+                        v-for="coin in supportedCoins"
+                        :key="coin.symbol"
+                        class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm"
                     >
+                        <img
+                            :src="coin.src"
+                            :alt="`${coin.symbol} logo`"
+                            class="size-5 object-contain"
+                            loading="lazy"
+                        />
                         <span
-                            v-for="coin in supportedCoins"
-                            :key="coin.symbol"
-                            class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm"
+                            class="text-vault-ink-dim text-xs font-semibold tracking-wide"
+                            >{{ coin.symbol }}</span
                         >
-                            <img
-                                :src="coin.src"
-                                :alt="`${coin.symbol} logo`"
-                                class="size-5 object-contain"
-                                loading="lazy"
-                            />
-                            <span
-                                class="text-vault-ink-dim text-xs font-semibold tracking-wide"
-                                >{{ coin.symbol }}</span
-                            >
-                        </span>
-                    </div>
+                    </span>
+                </div>
+
+            <!-- Country availability badges -->
+            <div
+                class="mt-10 flex flex-wrap items-center justify-center gap-3"
+            >
+                <span
+                    class="text-vault-ink-dim text-xs font-medium tracking-wide"
+                >
+                    Available in:
+                </span>
+                <img
+                    v-for="country in supportedCountries"
+                    :key="country.code"
+                    :src="country.src"
+                    :alt="country.name"
+                    class="size-5 object-contain"
+                    loading="lazy"
+                />
+            </div>
                 </div>
             </section>
 

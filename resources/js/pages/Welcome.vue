@@ -3,6 +3,7 @@ import { RouterLink as Link } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { ArrowRight, Fingerprint, KeyRound, Layers, Lock, ShieldCheck, Zap } from '@lucide/vue';
 import LightTunnel from '@/components/LightTunnel.vue';
+import CookieConsentModal from '@/components/CookieConsentModal.vue';
 
 const router = useRouter();
 
@@ -370,6 +371,8 @@ const supportedCountries = [
                 </div>
             </section>
         </main>
+
+        <CookieConsentModal />
 
         <footer
             class="border-border w-full border-t px-6 py-10 sm:px-10 lg:px-16"

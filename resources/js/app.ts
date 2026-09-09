@@ -12,6 +12,7 @@ import DashboardPage from '@/pages/Dashboard.vue';
 import WalletOverviewPage from '@/pages/wallet/Overview.vue';
 import WalletDepositPage from '@/pages/wallet/Deposit.vue';
 import WalletReceivePage from '@/pages/wallet/Receive.vue';
+import WalletUpgradePage from '@/pages/wallet/Upgrade.vue';
 import WalletWithdrawPage from '@/pages/wallet/Withdraw.vue';
 import WalletSwapPage from '@/pages/wallet/Swap.vue';
 import TransactionsIndexPage from '@/pages/transactions/Index.vue';
@@ -62,6 +63,7 @@ const routes = [
     { path: '/register/recovery-phrase', name: 'auth/RecoveryPhrase', component: RecoveryPhrasePage },
     { path: '/dashboard', name: 'Dashboard', component: DashboardPage },
     { path: '/wallet', name: 'wallet/Overview', component: WalletOverviewPage },
+    { path: '/wallet/upgrade', name: 'wallet/Upgrade', component: WalletUpgradePage },
     { path: '/wallet/deposit', name: 'wallet/Deposit', component: WalletDepositPage },
     { path: '/wallet/receive', name: 'wallet/Receive', component: WalletReceivePage },
     { path: '/wallet/swap', name: 'wallet/Swap', component: WalletSwapPage },

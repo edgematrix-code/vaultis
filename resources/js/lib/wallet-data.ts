@@ -67,6 +67,53 @@ export const CHAINS: Record<ChainId, Chain> = {
 
 export const CHAIN_LIST: Chain[] = Object.values(CHAINS);
 
+/**
+ * Multi-network address map for tokens that exist on multiple networks.
+ * Keyed by token chain ID, then by network chain ID.
+ */
+export const TOKEN_NETWORKS: Record<ChainId, ChainId[]> = {
+    btc: ['btc'],
+    eth: ['eth'],
+    bsc: ['bsc'],
+    trx: ['trx'],
+    usdt: ['eth', 'bsc', 'trx'],
+    usdc: ['eth', 'bsc', 'trx'],
+};
+
+/** Mock addresses per token + network for demo purposes */
+export const TOKEN_ADDRESSES: Record<ChainId, Record<ChainId, string>> = {
+    btc: { btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
+    eth: { eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18' },
+    bsc: { bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18' },
+    trx: { trx: 'TWzQk2JCk2pZM4N8MoY5rKzL3xV9jY7nBv' },
+    usdt: {
+        eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
+        bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
+        trx: 'TNwaU7D5QD8g7J8kRjK3xK1vL9mY5nBvZ3',
+    },
+    usdc: {
+        eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
+        bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
+        trx: 'TUyqR8K2pLxV9mNjK4xL7vB3nJ9dF6gH2w',
+    },
+};
+
+/**
+ * Returns the list of networks a token is available on.
+ */
+export function getTokenNetworks(token: ChainId): Chain[] {
+    return TOKEN_NETWORKS[token]
+        .map((netId) => CHAINS[netId])
+        .filter(Boolean);
+}
+
+/**
+ * Returns the deposit/receive address for a given token on a specific network.
+ */
+export function getTokenAddress(token: ChainId, network: ChainId): string {
+    return TOKEN_ADDRESSES[token]?.[network] ?? '';
+}
+
 export function getPortfolioTotal(balances: Pick<AssetBalance, 'usdValue'>[]) {
     return balances.reduce((sum, b) => sum + b.usdValue, 0);
 }
@@ -114,6 +161,22 @@ export function formatCrypto(value: number, decimals = 4) {
         minimumFractionDigits: 0,
         maximumFractionDigits: decimals,
     }).format(value);
+}
+
+export function formatUsdPrice(price: number): string {
+    if (price < 0.01) {
+        return '$' + price.toFixed(6);
+    }
+    if (price < 1) {
+        return '$' + price.toFixed(4);
+    }
+    if (price < 100) {
+        return '$' + price.toFixed(2);
+    }
+    return '$' + price.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 }
 
 export function formatPct(value: number) {

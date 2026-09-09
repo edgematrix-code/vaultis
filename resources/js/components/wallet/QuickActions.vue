@@ -8,49 +8,49 @@ import { Link } from '@/lib/inertia-shim';
     >
         <p class="text-vault-ink-dim text-sm">Quick actions</p>
 
-        <div class="grid grid-cols-1 gap-2.5">
+        <div class="grid grid-cols-1 gap-2">
             <Link
-                href="/wallet/deposit"
-                class="brand-label bg-vault-mint text-primary-foreground flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
+                href="/wallet/upgrade"
+                class="brand-label bg-vault-mint text-primary-foreground flex items-center justify-between rounded-lg px-3 py-0 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-vault-mint/20 hover:scale-[1.02] sm:px-3 sm:py-2"
             >
-                Deposit
+                Upgrade
                 <img
-                    src="/growth_transparent.png"
-                    alt="Deposit"
-                    class="size-16 object-contain sm:size-12"
+                    src="/vault_transparent.png"
+                    alt="Upgrade"
+                    class="size-24 object-contain sm:size-12"
                 />
             </Link>
             <Link
                 href="/wallet/withdraw"
-                class="brand-label border-border bg-secondary text-secondary-foreground flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
+                class="brand-label border-border bg-secondary text-secondary-foreground flex items-center justify-between rounded-lg border px-3 py-0 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-black/10 hover:scale-[1.02] sm:px-3 sm:py-2"
             >
-                Transfer
+                Withdraw
                 <img
                     src="/wallet_transparent.png"
-                    alt="Transfer"
-                    class="size-16 object-contain sm:size-12"
+                    alt="Withdraw"
+                    class="size-24 object-contain sm:size-12"
                 />
             </Link>
             <Link
                 href="/wallet/receive"
-                class="brand-label border-border text-foreground flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
+                class="brand-label border-border text-foreground flex items-center justify-between rounded-lg border px-3 py-0 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-black/10 hover:scale-[1.02] sm:px-3 sm:py-2"
             >
                 Receive
                 <img
                     src="/analytics_transparent.png"
                     alt="Receive"
-                    class="size-16 object-contain sm:size-12"
+                    class="size-24 object-contain sm:size-12"
                 />
             </Link>
             <Link
                 href="/wallet/swap"
-                class="brand-label border-border bg-vault-forest/10 text-vault-forest flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-transform hover:translate-x-0.5"
+                class="brand-label border-border bg-vault-forest/10 text-vault-forest flex items-center justify-between rounded-lg border px-3 py-0 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-vault-forest/30 hover:scale-[1.02] sm:px-3 sm:py-2"
             >
                 Swap
                 <img
                     src="/coin_swap_transparent.png"
                     alt="Swap"
-                    class="size-16 object-contain sm:size-12"
+                    class="size-24 object-contain sm:size-12"
                 />
             </Link>
         </div>

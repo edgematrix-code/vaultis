@@ -53,14 +53,13 @@ const chain = computed(() => CHAINS[selected.value]);
                         Deposits confirm automatically — no manual steps once
                         the transaction is broadcast on {{ chain.network }}.
                     </p>
-                </div>
-                <Link
-                    :href="`/wallet/receive?chain=${selected.value}`"
-                    class="brand-label bg-vault-mint text-primary-foreground inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap"
-                >
-                    Get address
-                    <ArrowRight class="size-4" />
-                </Link>
+                </div>                    <Link
+                        :href="`/wallet/receive?token=${selected.value}`"
+                        class="brand-label bg-vault-mint text-primary-foreground inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap"
+                    >
+                        Get address
+                        <ArrowRight class="size-4" />
+                    </Link>
             </div>
         </div>
     </div>

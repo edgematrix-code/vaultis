@@ -1,4 +1,14 @@
-export type ChainId = 'btc' | 'eth' | 'bsc' | 'trx' | 'usdt' | 'usdc';
+export type ChainId =
+    | 'btc'
+    | 'eth'
+    | 'bsc'
+    | 'trx'
+    | 'sol'
+    | 'ltc'
+    | 'usdt-erc'
+    | 'usdt-trc'
+    | 'usdt-bsc'
+    | 'usdc-eth';
 
 export type Chain = {
     id: ChainId;
@@ -8,6 +18,7 @@ export type Chain = {
     /** Tailwind-safe hex used for chain glyph + chart series */
     color: string;
     decimals: number;
+    logo: string;
 };
 
 export type AssetBalance = {
@@ -20,6 +31,7 @@ export type AssetBalance = {
 };
 
 export type TransactionStatus = 'completed' | 'pending' | 'failed';
+
 export type TransactionType = 'deposit' | 'withdrawal' | 'internal';
 
 export type Transaction = {

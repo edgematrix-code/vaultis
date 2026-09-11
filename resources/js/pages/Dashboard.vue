@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { RouterLink as Link } from 'vue-router';
 import { ArrowRight } from '@lucide/vue';
-import ActivityRow from '@/components/wallet/ActivityRow.vue';
+import ActivityModal from '@/components/ActivityModal.vue';
 import AssetRow from '@/components/wallet/AssetRow.vue';
 import BalanceCard from '@/components/wallet/BalanceCard.vue';
 import QuickActions from '@/components/wallet/QuickActions.vue';
@@ -103,23 +103,7 @@ const totalChangePct = computed(() =>
             </div>
 
             <div class="border-border bg-card rounded-2xl border p-6">
-                <div class="mb-2 flex items-center justify-between">
-                    <p class="text-vault-ink-dim text-sm">Recent activity</p>
-                    <Link
-                        to="/transactions"
-                        class="text-vault-mint flex items-center gap-1 text-xs font-medium hover:underline"
-                    >
-                        View all
-                        <ArrowRight class="size-3.5" />
-                    </Link>
-                </div>
-                <div class="divide-border divide-y">
-                    <ActivityRow
-                        v-for="t in transactions.slice(0, 5)"
-                        :key="t.id"
-                        :transaction="t"
-                    />
-                </div>
+                <ActivityModal />
             </div>
 
             <!-- Bank scene illustration -->

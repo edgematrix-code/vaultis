@@ -12,8 +12,12 @@ const globalPrices = ref<Record<ChainId, CoinGeckoPrice | null>>({
     eth: null,
     bsc: null,
     trx: null,
-    usdt: null,
-    usdc: null,
+    sol: null,
+    ltc: null,
+    'usdt-erc': null,
+    'usdt-trc': null,
+    'usdt-bsc': null,
+    'usdc-eth': null,
 });
 
 const loading = ref(false);
@@ -28,8 +32,12 @@ const API_IDS: Record<ChainId, { coingecko: string; cmc: string }> = {
     eth: { coingecko: 'ethereum', cmc: '1027' },
     bsc: { coingecko: 'binancecoin', cmc: '1839' },
     trx: { coingecko: 'tron', cmc: '1958' },
-    usdt: { coingecko: 'tether', cmc: '825' },
-    usdc: { coingecko: 'usd-coin', cmc: '3408' },
+    sol: { coingecko: 'solana', cmc: '4125' },
+    ltc: { coingecko: 'litecoin', cmc: '2' },
+    'usdt-erc': { coingecko: 'tether', cmc: '825' },
+    'usdt-trc': { coingecko: 'tether', cmc: '825' },
+    'usdt-bsc': { coingecko: 'tether', cmc: '825' },
+    'usdc-eth': { coingecko: 'usd-coin', cmc: '3408' },
 };
 
 // CoinCap API IDs
@@ -38,8 +46,12 @@ const COINCAP_IDS: Record<ChainId, string> = {
     eth: 'ethereum',
     bsc: 'binancecoin',
     trx: 'tron',
-    usdt: 'tether',
-    usdc: 'usd-coin',
+    sol: 'solana',
+    ltc: 'litecoin',
+    'usdt-erc': 'tether',
+    'usdt-trc': 'tether',
+    'usdt-bsc': 'tether',
+    'usdc-eth': 'usd-coin',
 };
 
 // CoinGecko API
@@ -104,7 +116,7 @@ async function fetchFromCoinGecko(chainId: ChainId): Promise<CoinGeckoPrice | nu
 }
 
 async function fetchAllPrices(): Promise<void> {
-    const allChainIds: ChainId[] = ['btc', 'eth', 'bsc', 'trx', 'usdt', 'usdc'];
+    const allChainIds: ChainId[] = ['btc', 'eth', 'bsc', 'trx', 'sol', 'ltc', 'usdt-erc', 'usdt-trc', 'usdt-bsc', 'usdc-eth'];
 
     if (typeof fetch !== 'function') {
         console.warn('[Price] fetch API not available');

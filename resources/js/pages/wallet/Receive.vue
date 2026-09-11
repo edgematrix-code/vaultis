@@ -6,6 +6,7 @@ import ChainSelect from '@/components/wallet/ChainSelect.vue';
 import QRAddress from '@/components/wallet/QRAddress.vue';
 import { CHAINS, TOKEN_NETWORKS, TOKEN_ADDRESSES, getTokenNetworks } from '@/lib/wallet-data';
 import type { ChainId } from '@/types/wallet';
+import type { AssetBalance } from '@/types/wallet';
 
 defineOptions({
     layout: {
@@ -32,20 +33,17 @@ const initialToken = (params.get('token') as ChainId) || 'btc';
 const selectedToken = ref<ChainId>(initialToken);
 
 // Step 2: Select network for that token (where to receive it)
-const selectedNetwork = ref<ChainId>(TOKEN_NETWORKS[initialToken][0]);
+const selectedNetwork = ref<ChainId>(
+    TOKEN_NETWORKS[initialToken]?.[0] ?? initialToken,
+);
 
 // Reset network when token changes (pick first available network for new token)
 watch(
     selectedToken,
     (token) => {
-        selectedNetwork.value = TOKEN_NETWORKS[token][0];
+        selectedNetwork.value = TOKEN_NETWORKS[token]?.[0] ?? token;
     },
     { immediate: true },
-);
-
-// Get the balance for the selected token (not network — address is per token+network)
-const tokenBalance = computed(
-    () => balances.value.find((b) => b.chain === selectedToken.value),
 );
 
 // Get chain info for the selected token
@@ -107,10 +105,14 @@ const receiveAddress = computed(
                         >
                             <ChainGlyph :chain="network.id" size="sm" />
                             <span class="min-w-0">
-                                <span class="text-foreground block truncate text-sm font-medium">
+                                <span
+                                    class="text-foreground block truncate text-sm font-medium"
+                                    >
                                     {{ network.symbol }}
                                 </span>
-                                <span class="text-vault-ink-dim block truncate text-[11px]">
+                                <span
+                                    class="text-vault-ink-dim block truncate text-[11px]"
+                                    >
                                     {{ network.network }}
                                 </span>
                             </span>
@@ -118,7 +120,10 @@ const receiveAddress = computed(
                     </div>
 
                     <!-- Network-specific warning for multi-network tokens -->
-                    <div v-if="availableNetworks.length > 1" class="mt-4 rounded-xl bg-vault-amber/10 border border-vault-amber/20 p-3">
+                    <div
+                        v-if="availableNetworks.length > 1"
+                        class="mt-4 rounded-xl bg-vault-amber/10 border border-vault-amber/20 p-3"
+                    >
                         <p class="text-vault-amber text-xs font-medium">
                             ⚠️ Network selection matters
                         </p>
@@ -144,9 +149,14 @@ const receiveAddress = computed(
                 </div>
 
                 <div class="mt-4 flex flex-col items-center">
-                    <QRAddress :chain="selectedNetwork" :address="receiveAddress" />
+                    <QRAddress
+                        v-if="receiveAddress"
+                        :chain="selectedNetwork"
+                        :address="receiveAddress"
+                    />
                     <p class="mt-3 text-vault-ink-dim text-xs">
-                        Scan this QR code to receive {{ tokenInfo.symbol }} on {{ networkInfo.network }}
+                        Scan this QR code to receive {{ tokenInfo.symbol }} on
+                        {{ networkInfo.network }}
                     </p>
                 </div>
             </div>

@@ -54,16 +54,19 @@ watch(
 
 const isPositive = computed(() => priceChange24h.value >= 0);
 
+const isStables = computed(() => props.balance.chain === 'usdt-erc' || props.balance.chain === 'usdt-trc' || props.balance.chain === 'usdt-bsc' || props.balance.chain === 'usdc-eth');
+
 const priceColor = computed(() => {
-    if (props.balance.chain === 'usdt' || props.balance.chain === 'usdc') {
-        return 'text-vault-ink-dim';
+    // Stablecoins: price is effectively $1.00 — show as mint/green.
+    if (isStables.value) {
+        return 'text-vault-mint';
     }
     return isPositive.value ? 'text-vault-mint' : 'text-vault-rose';
 });
 
 const priceDisplay = computed(() => {
     const price = priceUsd.value;
-    if (props.balance.chain === 'usdt' || props.balance.chain === 'usdc') {
+    if (isStables.value) {
         return '$1.00';
     }
     if (price === 0 || !currentPriceData.value) {
@@ -87,6 +90,11 @@ const priceChangeDisplay = computed(() => {
     }
     const sign = change >= 0 ? '+' : '';
     return sign + change.toFixed(2) + '%';
+});
+
+const changeColor = computed(() => {
+    // 24h change shown as yellow/amber for all assets.
+    return 'text-vault-amber';
 });
 </script>
 
@@ -133,7 +141,7 @@ const priceChangeDisplay = computed(() => {
                     :class="[priceColor, flashClass]"
                 >
                     {{ priceDisplay }}
-                    <span class="text-vault-ink-dim">(24h {{ priceChangeDisplay }})</span>
+                    <span :class="changeColor">(24h {{ priceChangeDisplay }})</span>
                 </span>
             </div>
         </div>

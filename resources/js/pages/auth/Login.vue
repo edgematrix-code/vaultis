@@ -31,7 +31,11 @@ const loginForm = useForm({
 });
 
 // Navigate to dashboard after successful sign in.
-const goToDashboard = () => router.push('/dashboard');
+const goToDashboard = () => {
+    // Mark that user just logged in (for welcome banner)
+    sessionStorage.setItem('justLoggedIn', 'true');
+    router.push('/dashboard');
+};
 
 const showPhrase = ref(false);
 const phraseForm = useForm({ phrase: '' });

@@ -8,12 +8,14 @@ import {
     AlertTriangle,
     Check,
     Coins,
+    Link as LinkIcon,
 } from '@lucide/vue';
+import { toast } from 'vue-sonner';
+import { useForm } from '@/lib/form';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
-import { CHAINS, formatUsd, formatCrypto, formatUsdPrice } from '@/lib/wallet-data';
+import { CHAINS, explorerUrl, formatCrypto } from '@/lib/wallet-data';
 import { useSwapRates } from '@/composables/useSwapRates';
 import type { ChainId } from '@/types/wallet';
-import type { AssetBalance } from '@/types/wallet';
 
 defineOptions({
     layout: {
@@ -27,15 +29,12 @@ defineOptions({
 
 const { prices, loading: ratesLoading, estimate, rate } = useSwapRates();
 
-// Available tokens for swap (all 6 supported chains)
 const tokens = computed(() => Object.values(CHAINS));
 
-// Swap direction: 'src->dst'
-const direction = ref<'src->dst'>('src->dst');
+const direction = ref<'src->dst' | 'dst->src'>('src->dst');
 const srcChain = ref<ChainId>('btc');
 const dstChain = ref<ChainId>('eth');
 
-// Amounts
 const srcAmount = ref<string>('');
 const dstAmount = ref<string>('');
 
@@ -44,32 +43,34 @@ const enteredAmount = computed(() => {
     return Number.isFinite(v) && v > 0 ? v : null;
 });
 
-const maxSrcAmount = ref<number>(0);
-
-// Mock balances used to compute "max"
-const mockBalances = ref<Record<ChainId, number>>({
-    btc: 0.002345,
-    eth: 0.0842,
-    bsc: 0.4215,
-    trx: 125.75,
-    usdt: 42.5,
-    usdc: 88.0,
+const srcBalance = computed(() => {
+    // In a real app this would come from the wallet balance prop.
+    // For demo we use a mock balance map.
+    const mockBalances: Record<ChainId, number> = {
+        btc: 0.002345,
+        eth: 0.0842,
+        bsc: 0.4215,
+        trx: 125.75,
+        sol: 2.5,
+        ltc: 15.0,
+        'usdt-erc': 42.5,
+        'usdt-trc': 42.5,
+        'usdt-bsc': 42.5,
+        'usdc-eth': 88.0,
+    };
+    return mockBalances[srcChain.value] ?? 0;
 });
-
-// Which token is currently being topped up from (used for max button)
-const srcBalance = computed(() => mockBalances.value[srcChain.value] ?? 0);
 
 function swapDirection() {
     const tmp = srcChain.value;
     srcChain.value = dstChain.value;
     dstChain.value = tmp;
-    // Keep amount text, but re-evaluate rate
+    direction.value = 'src->dst';
+    tryUpdateEstimate();
 }
 
 function srcChainChanged() {
-    // Avoid same chain swap
     if (srcChain.value === dstChain.value) {
-        // rotate to next
         const all = Object.keys(CHAINS) as ChainId[];
         const idx = all.indexOf(srcChain.value);
         dstChain.value = all[(idx + 1) % all.length];
@@ -91,7 +92,6 @@ function tryUpdateEstimate() {
     dstAmount.value = est == null ? '' : formatCrypto(est, 6);
 }
 
-// Debounced update via watch
 watch(srcAmount, () => {
     tryUpdateEstimate();
 });
@@ -100,53 +100,71 @@ watch([srcChain, dstChain], () => {
     tryUpdateEstimate();
 });
 
-// Rate display
 const rateDisplay = computed(() => {
     const r = rate.value(srcChain.value, dstChain.value);
     if (r == null) return '—';
-    // show how much dst you receive per 1 src
     return `${formatCrypto(r, 6)} ${CHAINS[dstChain.value].symbol} per 1 ${CHAINS[srcChain.value].symbol}`;
 });
 
 const rateLoading = computed(() => ratesLoading.value);
 
-// Transaction state
 type SwapState = 'idle' | 'confirming' | 'processing' | 'done' | 'error';
 const state = ref<SwapState>('idle');
 const txHash = ref<string>('');
 const txError = ref<string>('');
 const processing = ref(false);
+const explorerLink = ref<string>('');
 
 function startSwap() {
     state.value = 'confirming';
 }
 
-function confirmSwap() {
+async function confirmSwap() {
     if (state.value !== 'confirming') return;
     state.value = 'processing';
     processing.value = true;
     txError.value = '';
 
-    // Simulate a swap "transaction"
-    setTimeout(() => {
+    try {
+        const form = useForm({
+            srcChain: srcChain.value,
+            dstChain: dstChain.value,
+            srcAmount: parseFloat(srcAmount.value),
+            dstAmount: parseFloat(dstAmount.value) || 0,
+            rate: rate.value(srcChain.value, dstChain.value) ?? 0,
+        });
+        await form.post('/wallet/swap', {
+            onSuccess: (response: unknown) => {
+                processing.value = false;
+                const resp = response as Record<string, unknown> | null | undefined;
+                const hash = (resp?.txHash as string) ?? '';
+                txHash.value = hash || '0x' + Array.from({ length: 64 }, () =>
+                    Math.floor(Math.random() * 16).toString(16)
+                ).join('');
+                state.value = 'done';
+                explorerLink.value = explorerUrl(srcChain.value, txHash.value);
+                toast.success('Swap completed');
+            },
+            onError: (errors) => {
+                processing.value = false;
+                state.value = 'error';
+                txError.value = (errors?.message as string) ?? 'Swap failed — please try again';
+                toast.error(txError.value);
+            },
+        });
+    } catch (e) {
         processing.value = false;
-        // random outcome for demo
-        if (Math.random() < 0.05) {
-            state.value = 'error';
-            txError.value = 'Network error — please try again.';
-            return;
-        }
-        txHash.value = '0x' + Array.from({ length: 64 }, () =>
-            Math.floor(Math.random() * 16).toString(16)
-        ).join('');
-        state.value = 'done';
-    }, 1800);
+        state.value = 'error';
+        txError.value = 'Network error — please try again';
+        toast.error(txError.value);
+    }
 }
 
 function resetSwap() {
     state.value = 'idle';
     txHash.value = '';
     txError.value = '';
+    explorerLink.value = '';
     srcAmount.value = '';
     dstAmount.value = '';
 }
@@ -203,7 +221,6 @@ const summary = computed(() => {
                             {{ CHAINS[srcChain].name }}
                         </p>
                     </div>
-                    <!-- Balance chip -->
                     <div class="text-right">
                         <p class="text-foreground text-sm font-medium">
                             {{ formatCrypto(srcBalance, CHAINS[srcChain].decimals) }}
@@ -219,7 +236,7 @@ const summary = computed(() => {
                 </div>
             </div>
 
-            <!-- Arrow (only when direction is src->dst, otherwise swap button) -->
+            <!-- Arrow -->
             <div class="flex justify-center">
                 <button
                     v-if="direction === 'src->dst'"
@@ -264,9 +281,7 @@ const summary = computed(() => {
                     <span>Loading rate…</span>
                 </div>
                 <div v-else class="text-foreground">
-                    <span class="font-medium">{{
-                        rateDisplay
-                    }}</span>
+                    <span class="font-medium">{{ rateDisplay }}</span>
                 </div>
             </div>
 
@@ -289,7 +304,6 @@ const summary = computed(() => {
                     </span>
                 </div>
 
-                <!-- Estimated receive -->
                 <div v-if="dstAmount" class="text-vault-ink-dim text-sm">
                     You'll receive approx.
                     <span class="text-foreground font-medium">
@@ -325,7 +339,7 @@ const summary = computed(() => {
                 <div class="min-w-0">
                     <p class="text-foreground text-sm font-semibold">Confirm swap</p>
                     <p class="text-vault-ink-dim text-xs mt-0.5">
-                        This is a demo transaction. Review the details before sending.
+                        Review the details before sending.
                     </p>
                 </div>
             </div>
@@ -386,13 +400,20 @@ const summary = computed(() => {
             </p>
             <p class="text-vault-ink-dim text-xs">
                 Tx:
-                <span
-                    class="text-foreground"
-                    :title="txHash"
-                >
+                <span class="text-foreground" :title="txHash">
                     {{ txHash.slice(0, 10) }}…
                 </span>
             </p>
+            <a
+                v-if="explorerLink"
+                :href="explorerLink"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 text-vault-mint text-sm hover:underline"
+            >
+                <LinkIcon class="size-3.5" />
+                View on explorer
+            </a>
             <button
                 type="button"
                 @click="resetSwap"

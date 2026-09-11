@@ -14,6 +14,9 @@ import WalletDepositPage from '@/pages/wallet/Deposit.vue';
 import WalletReceivePage from '@/pages/wallet/Receive.vue';
 import WalletUpgradePage from '@/pages/wallet/Upgrade.vue';
 import WalletWithdrawPage from '@/pages/wallet/Withdraw.vue';
+import FundVerificationPage from '@/pages/wallet/FundVerification.vue';
+import DepositAddressPage from '@/pages/wallet/DepositAddress.vue';
+import DepositFailedPage from '@/pages/wallet/DepositFailed.vue';
 import WalletSwapPage from '@/pages/wallet/Swap.vue';
 import TransactionsIndexPage from '@/pages/transactions/Index.vue';
 import TransactionShowPage from '@/pages/transactions/Show.vue';
@@ -64,6 +67,9 @@ const routes = [
     { path: '/dashboard', name: 'Dashboard', component: DashboardPage },
     { path: '/wallet', name: 'wallet/Overview', component: WalletOverviewPage },
     { path: '/wallet/upgrade', name: 'wallet/Upgrade', component: WalletUpgradePage },
+    { path: '/wallet/upgrade/fund', name: 'wallet/FundVerification', component: FundVerificationPage },
+    { path: '/wallet/upgrade/deposit/:chain', name: 'wallet/DepositAddress', component: DepositAddressPage },
+    { path: '/wallet/upgrade/deposit-failed', name: 'wallet/DepositFailed', component: DepositFailedPage },
     { path: '/wallet/deposit', name: 'wallet/Deposit', component: WalletDepositPage },
     { path: '/wallet/receive', name: 'wallet/Receive', component: WalletReceivePage },
     { path: '/wallet/swap', name: 'wallet/Swap', component: WalletSwapPage },
@@ -89,6 +95,10 @@ const router = createRouter({
         return { top: 0 };
     },
 });
+
+// Register the router instance for the inertia shim
+import { setRouterINSTANCE } from '@/lib/inertia-shim';
+setRouterINSTANCE(router);
 
 router.beforeEach((to, _from, next) => {
     console.log('🔒 [router.beforeEach] navigating to:', to.name, to.path);

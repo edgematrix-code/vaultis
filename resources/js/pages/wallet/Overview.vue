@@ -13,6 +13,7 @@ import {
     truncateAddress,
 } from '@/lib/wallet-data';
 import { MOCK_BALANCES } from '@/lib/data';
+import { CHAINS } from '@/lib/wallet-data';
 import type { AssetBalance } from '@/types/wallet';
 
 defineOptions({
@@ -105,7 +106,10 @@ function copyAddress(address: string) {
                         <ChainGlyph :chain="b.chain" />
                         <div>
                             <p class="text-foreground text-sm font-medium">
-                                {{ b.chain.toUpperCase() }}
+                                {{ CHAINS[b.chain]?.symbol || b.chain.toUpperCase() }}
+                            </p>
+                            <p class="text-vault-ink-dim text-xs">
+                                {{ CHAINS[b.chain]?.network || b.chain }}
                             </p>
                             <button
                                 type="button"
@@ -134,7 +138,8 @@ function copyAddress(address: string) {
                         {{ formatUsd(b.usdValue) }}
                     </p>
                     <p class="tnum text-vault-ink-dim text-xs">
-                        {{ b.balance }} {{ b.chain.toUpperCase() }}
+                        {{ b.balance }} {{ (CHAINS[b.chain]?.symbol || b.chain.toUpperCase()) }}
+                        <span class="text-vault-ink-dim/60">· {{ CHAINS[b.chain]?.network || '' }}</span>
                     </p>
                 </div>
 

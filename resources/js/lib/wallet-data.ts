@@ -1,12 +1,30 @@
 import type { AssetBalance, Chain, ChainId } from '@/types/wallet';
 
-/**
- * Static chain registry and pure formatting helpers.
- *
- * Dynamic wallet data (balances, prices, transactions, history, security)
- * is served by the Laravel backend through Inertia page props — see the
- * Dashboard / Wallet / Transactions controllers and routes/web.php.
- */
+/** Static chain registry and pure formatting helpers. */
+
+function logoFor(id: ChainId): string {
+    const brandCandidates: Record<ChainId, string[]> = {
+        btc: ['/brand/coins/btc.png'],
+        eth: ['/brand/coins/eth.png'],
+        bsc: ['/brand/coins/bnb.png'],
+        trx: ['/brand/coins/trx.png'],
+        sol: ['/brand/coins/solana.png'],
+        ltc: ['/brand/coins/ltc.png'],
+        'usdt-erc': ['/brand/coins/usdt.png'],
+        'usdt-trc': ['/brand/coins/usdt.png'],
+        'usdt-bsc': ['/brand/coins/usdt.png'],
+        'usdc-eth': ['/brand/coins/usdc.png'],
+    };
+
+    const brand = brandCandidates[id];
+    if (brand) {
+        for (const path of brand) {
+            if (path) return path;
+        }
+    }
+
+    return '';
+}
 
 export const CHAINS: Record<ChainId, Chain> = {
     btc: {
@@ -16,7 +34,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Bitcoin',
         color: '#F2A93B',
         decimals: 8,
-        logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg',
+        logo: logoFor('btc'),
     },
     eth: {
         id: 'eth',
@@ -25,7 +43,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'Ethereum',
         color: '#8FA3D9',
         decimals: 6,
-        logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg',
+        logo: logoFor('eth'),
     },
     bsc: {
         id: 'bsc',
@@ -34,7 +52,7 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'BNB Smart Chain',
         color: '#E7B65C',
         decimals: 6,
-        logo: 'https://cryptologos.cc/logos/bnb-bnb-logo.svg',
+        logo: logoFor('bsc'),
     },
     trx: {
         id: 'trx',
@@ -43,25 +61,61 @@ export const CHAINS: Record<ChainId, Chain> = {
         network: 'TRON',
         color: '#E2564F',
         decimals: 4,
-        logo: 'https://cryptologos.cc/logos/tron-trx-logo.svg',
+        logo: logoFor('trx'),
     },
-    usdt: {
-        id: 'usdt',
+    sol: {
+        id: 'sol',
+        name: 'Solana',
+        symbol: 'SOL',
+        network: 'Solana',
+        color: '#14F195',
+        decimals: 9,
+        logo: logoFor('sol'),
+    },
+    ltc: {
+        id: 'ltc',
+        name: 'Litecoin',
+        symbol: 'LTC',
+        network: 'Litecoin',
+        color: '#A6A9AA',
+        decimals: 8,
+        logo: logoFor('ltc'),
+    },
+    'usdt-erc': {
+        id: 'usdt-erc',
         name: 'Tether USD',
         symbol: 'USDT',
         network: 'Ethereum',
         color: '#3FBF8F',
         decimals: 2,
-        logo: 'https://cryptologos.cc/logos/tether-usdt-logo.svg',
+        logo: logoFor('usdt-erc'),
     },
-    usdc: {
-        id: 'usdc',
-        name: 'USD Coin',
+    'usdt-trc': {
+        id: 'usdt-trc',
+        name: 'Tether USD',
+        symbol: 'USDT',
+        network: 'TRON',
+        color: '#3FBF8F',
+        decimals: 2,
+        logo: logoFor('usdt-trc'),
+    },
+    'usdt-bsc': {
+        id: 'usdt-bsc',
+        name: 'Tether USD',
+        symbol: 'USDT',
+        network: 'BNB Smart Chain',
+        color: '#3FBF8F',
+        decimals: 2,
+        logo: logoFor('usdt-bsc'),
+    },
+    'usdc-eth': {
+        id: 'usdc-eth',
+        name: 'USDC Coin',
         symbol: 'USDC',
         network: 'Ethereum',
         color: '#4C8DD9',
         decimals: 2,
-        logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg',
+        logo: logoFor('usdc-eth'),
     },
 };
 
@@ -76,26 +130,26 @@ export const TOKEN_NETWORKS: Record<ChainId, ChainId[]> = {
     eth: ['eth'],
     bsc: ['bsc'],
     trx: ['trx'],
-    usdt: ['eth', 'bsc', 'trx'],
-    usdc: ['eth', 'bsc', 'trx'],
+    sol: ['sol'],
+    ltc: ['ltc'],
+    'usdt-erc': ['usdt-erc'],
+    'usdt-trc': ['usdt-trc'],
+    'usdt-bsc': ['usdt-bsc'],
+    'usdc-eth': ['usdc-eth'],
 };
 
-/** Mock addresses per token + network for demo purposes */
+/** Deposit/receive addresses per token + network */
 export const TOKEN_ADDRESSES: Record<ChainId, Record<ChainId, string>> = {
-    btc: { btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
-    eth: { eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18' },
-    bsc: { bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18' },
-    trx: { trx: 'TWzQk2JCk2pZM4N8MoY5rKzL3xV9jY7nBv' },
-    usdt: {
-        eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
-        bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
-        trx: 'TNwaU7D5QD8g7J8kRjK3xK1vL9mY5nBvZ3',
-    },
-    usdc: {
-        eth: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
-        bsc: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
-        trx: 'TUyqR8K2pLxV9mNjK4xL7vB3nJ9dF6gH2w',
-    },
+    btc: { btc: 'bc1qys0x2xvd39auaakxh9q7ek64skn6ftfyzsplga' },
+    eth: { eth: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
+    bsc: { bsc: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
+    trx: { trx: 'TH7yVRLDtWoBkemNupVKusgNCEzHccnqP7' },
+    sol: { sol: 'HT4rMEuCvdaJe5VVcbQ71Wfd7txEH3sTHMXztjQDchZf' },
+    ltc: { ltc: 'ltc1qsrkqq35g3yhkw3py38fcr6ez387kukw49m6rw0' },
+    'usdt-erc': { 'usdt-erc': '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
+    'usdt-trc': { 'usdt-trc': 'TH7yVRLDtWoBkemNupVKusgNCEzHccnqP7' },
+    'usdt-bsc': { 'usdt-bsc': '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
+    'usdc-eth': { 'usdc-eth': '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
 };
 
 /**
@@ -134,8 +188,12 @@ const EXPLORERS: Record<ChainId, string> = {
     eth: 'https://etherscan.io/tx/',
     bsc: 'https://bscscan.com/tx/',
     trx: 'https://tronscan.org/#/transaction/',
-    usdt: 'https://etherscan.io/tx/',
-    usdc: 'https://etherscan.io/tx/',
+    sol: 'https://solscan.io/tx/',
+    ltc: 'https://blockchair.com/litecoin/transaction/',
+    'usdt-erc': 'https://etherscan.io/tx/',
+    'usdt-trc': 'https://tronscan.org/#/transaction/',
+    'usdt-bsc': 'https://bscscan.com/tx/',
+    'usdc-eth': 'https://etherscan.io/tx/',
 };
 
 export function explorerUrl(chain: ChainId, txHash: string) {
@@ -143,8 +201,6 @@ export function explorerUrl(chain: ChainId, txHash: string) {
 }
 
 export function formatUsd(value: number, opts: Intl.NumberFormatOptions = {}) {
-    // Charts may request 0 decimals (e.g. whole-dollar portfolio totals); the
-    // minimum must never exceed the maximum or Intl.NumberFormat throws.
     const maximumFractionDigits = opts.maximumFractionDigits ?? 2;
 
     return new Intl.NumberFormat('en-US', {

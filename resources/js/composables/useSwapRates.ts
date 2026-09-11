@@ -4,7 +4,7 @@ import type { ChainId } from '@/types/wallet';
 
 // Pairs that can be swapped (token -> token, same nominal network family)
 // For a demo we allow any token->token swap using USD mid-rates.
-const ALL_CHAINS: ChainId[] = ['btc', 'eth', 'bsc', 'trx', 'usdt', 'usdc'];
+const ALL_CHAINS: ChainId[] = ['btc', 'eth', 'bsc', 'trx', 'sol', 'ltc', 'usdt-erc', 'usdt-trc', 'usdt-bsc', 'usdc-eth'];
 
 export function useSwapRates() {
     const { prices, loading } = useCoinGecko(ALL_CHAINS);

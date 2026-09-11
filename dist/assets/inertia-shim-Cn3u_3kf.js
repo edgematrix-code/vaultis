@@ -1,1 +1,0 @@
-import{n as e}from"./inertia-shim-D8_rRWkg.js";export{e as Head};

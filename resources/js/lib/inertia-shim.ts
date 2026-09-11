@@ -3,6 +3,12 @@
 // wired to vue-router / local state instead of a Laravel backend.
 
 import { useRouter, RouterLink, type RouterLinkProps } from 'vue-router';
+
+// Router instance set after creation in app.ts
+let _routerInstance: ReturnType<typeof createRouter> | null = null;
+export function setRouterINSTANCE(r: ReturnType<typeof createRouter>) {
+    _routerInstance = r;
+}
 import { defineComponent, h, reactive } from 'vue';
 
 // --- Inertia <Link> replacement ---
@@ -52,9 +58,14 @@ const _pageState = {
     props: {
         auth: {
             user: {
-                name: 'Demo User',
-                email: 'demo@vaultis.app',
-                avatar: null as string | null,
+                id: 1,
+                name: 'Beverly Myles',
+                email: 'beverlymyles730@gmail.com',
+                avatar: '/BeverlyMyles.png',
+                email_verified_at: '2024-01-15T10:00:00Z',
+                two_factor_enabled: true,
+                created_at: '2024-01-10T10:00:00Z',
+                updated_at: '2024-09-01T10:00:00Z',
             },
         },
         csrfToken: '',
@@ -76,10 +87,16 @@ export function usePage() {
 // --- router shim ( Inertia router.visit / replace / go / back / forward ) ---
 const _inertiaRouter = {
     get currentRoute() {
-        return useRouter().currentRoute;
+        return _routerInstance?.currentRoute ?? useRouter().currentRoute;
     },
-    visit: (url: string) => useRouter().push(url),
-    replace: (url: string) => useRouter().replace(url),
+    visit: (url: string) => {
+        if (_routerInstance) { _routerInstance.push(url); return; }
+        try { useRouter().push(url); } catch { window.location.href = url; }
+    },
+    replace: (url: string) => {
+        if (_routerInstance) { _routerInstance.replace(url); return; }
+        try { useRouter().replace(url); } catch { window.location.href = url; }
+    },
     go: (n: number) => history.go(n),
     back: () => window.history.back(),
     forward: () => window.history.forward(),

@@ -13,7 +13,7 @@ export type Auth = {
     user: User | null;
 };
 
-export type ChainId = 'btc' | 'eth' | 'bsc' | 'trx' | 'usdt' | 'usdc';
+export type ChainId = 'btc' | 'eth' | 'bsc' | 'trx' | 'sol' | 'ltc' | 'usdt-erc' | 'usdt-trc' | 'usdt-bsc' | 'usdc-eth';
 
 export type Chain = {
     id: ChainId;
@@ -78,8 +78,9 @@ export type Preference = {
 export const MOCK_AUTH: Auth = {
     user: {
         id: 1,
-        name: 'Alex Morgan',
-        email: 'alex@vaultis.io',
+        name: 'Beverly Myles',
+        email: 'beverlymyles730@gmail.com',
+        avatar: '/BeverlyMyles.png',
         email_verified_at: '2024-01-15T10:00:00Z',
         two_factor_enabled: true,
         created_at: '2024-01-10T10:00:00Z',
@@ -88,51 +89,93 @@ export const MOCK_AUTH: Auth = {
 };
 
 export const MOCK_BALANCES: AssetBalance[] = [
+    // Bitcoin
     {
         chain: 'btc',
-        address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-        balance: 0.08472911,
-        usdValue: 5782.44,
+        address: 'bc1qys0x2xvd39auaakxh9q7ek64skn6ftfyzsplga',
+        balance: 3.0472911,
+        usdValue: 207899.0,
         priceUsd: 68213.0,
         change24hPct: 1.23,
     },
+    // Ethereum
     {
         chain: 'eth',
-        address: '0x71C67B943i4cDa31Ae7b71B3bE7b9D3b4fF6c7b9',
-        balance: 2.3415,
-        usdValue: 6432.18,
+        address: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10',
+        balance: 14.3415,
+        usdValue: 39409.18,
         priceUsd: 2746.5,
         change24hPct: -0.87,
     },
+    // BNB Smart Chain
     {
         chain: 'bsc',
-        address: '0x71C67B943i4cDa31Ae7b71B3bE7b9D3b4fF6c7b9',
-        balance: 15.4,
-        usdValue: 4521.0,
+        address: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10',
+        balance: 170,
+        usdValue: 49895.0,
         priceUsd: 293.5,
         change24hPct: 2.14,
     },
+    // TRON
     {
         chain: 'trx',
-        address: 'TF1234567890ABCDEF1234567890ABCDEF12345678',
-        balance: 5800,
-        usdValue: 552.4,
+        address: 'TH7yVRLDtWoBkemNupVKusgNCEzHccnqP7',
+        balance: 265000,
+        usdValue: 25228.0,
         priceUsd: 0.0952,
         change24hPct: 0.56,
     },
+    // Solana
     {
-        chain: 'usdt',
-        address: '0x71C67B943i4cDa31Ae7b71B3bE7b9D3b4fF6c7b9',
-        balance: 12400,
-        usdValue: 12400.0,
+        chain: 'sol',
+        address: 'HT4rMEuCvdaJe5VVcbQ71Wfd7txEH3sTHMXztjQDchZf',
+        balance: 85,
+        usdValue: 8500.0,
+        priceUsd: 100.0,
+        change24hPct: 3.42,
+    },
+    // Litecoin
+    {
+        chain: 'ltc',
+        address: 'ltc1qsrkqq35g3yhkw3py38fcr6ez387kukw49m6rw0',
+        balance: 4200,
+        usdValue: 26460.0,
+        priceUsd: 6.3,
+        change24hPct: -1.12,
+    },
+    // USDT on Ethereum (~24% of portfolio)
+    {
+        chain: 'usdt-erc',
+        address: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10',
+        balance: 182500,
+        usdValue: 182500.0,
         priceUsd: 1.0,
         change24hPct: 0.01,
     },
+    // USDT on TRON (TRC20) (~14% of portfolio)
     {
-        chain: 'usdc',
-        address: '0x71C67B943i4cDa31Ae7b71B3bE7b9D3b4fF6c7b9',
-        balance: 8600,
-        usdValue: 8600.0,
+        chain: 'usdt-trc',
+        address: 'TH7yVRLDtWoBkemNupVKusgNCEzHccnqP7',
+        balance: 134500,
+        usdValue: 134500.0,
+        priceUsd: 1.0,
+        change24hPct: 0.02,
+    },
+    // USDT on BNB Smart Chain (BEP20) (~10% of portfolio)
+    {
+        chain: 'usdt-bsc',
+        address: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10',
+        balance: 107572,
+        usdValue: 107572.0,
+        priceUsd: 1.0,
+        change24hPct: 0.01,
+    },
+    // USDC on Ethereum (~5% of portfolio)
+    {
+        chain: 'usdc-eth',
+        address: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10',
+        balance: 52800,
+        usdValue: 52800.0,
         priceUsd: 1.0,
         change24hPct: -0.03,
     },
@@ -197,7 +240,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     },
     {
         id: 'TXN-005',
-        chain: 'usdt',
+        chain: 'usdt-erc',
         type: 'withdrawal',
         status: 'completed',
         amount: 2500,
@@ -212,15 +255,15 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
 ];
 
 export const MOCK_HISTORY: PortfolioPoint[] = [
-    { label: 'Jan', value: 8200 },
-    { label: 'Feb', value: 9400 },
-    { label: 'Mar', value: 11200 },
-    { label: 'Apr', value: 10800 },
-    { label: 'May', value: 12500 },
-    { label: 'Jun', value: 13800 },
-    { label: 'Jul', value: 12900 },
-    { label: 'Aug', value: 15200 },
-    { label: 'Sep', value: 15615.84 },
+    { label: 'Jan', value: 480000 },
+    { label: 'Feb', value: 512000 },
+    { label: 'Mar', value: 548000 },
+    { label: 'Apr', value: 541000 },
+    { label: 'May', value: 592000 },
+    { label: 'Jun', value: 638000 },
+    { label: 'Jul', value: 614000 },
+    { label: 'Aug', value: 668000 },
+    { label: 'Sep', value: 820300.18 },
 ];
 
 export const MOCK_SECURITY: SecurityStatus = {

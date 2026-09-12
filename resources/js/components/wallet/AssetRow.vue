@@ -101,15 +101,17 @@ const changeColor = computed(() => {
 <template>
     <Link
         :href="`/wallet/receive?chain=${balance.chain}`"
-        class="hover:bg-secondary/60 grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-xl px-3 py-3 transition-colors sm:grid-cols-[auto_1.4fr_1fr_auto]"
+        class="hover:bg-secondary/60 flex flex-col gap-1 rounded-xl px-4 py-4 transition-colors"
     >
-        <ChainGlyph :chain="chain.id" />
+        <div class="flex items-center gap-3">
+            <ChainGlyph :chain="chain.id" />
 
-        <div class="min-w-0">
-            <p class="text-foreground truncate text-sm font-medium">
-                {{ chain.name }}
-            </p>
-            <p class="text-vault-ink-dim text-xs">{{ chain.network }}</p>
+            <div class="min-w-0">
+                <p class="text-foreground text-sm font-medium">
+                    {{ chain.name }}
+                </p>
+                <p class="text-vault-ink-dim text-xs">{{ chain.network }}</p>
+            </div>
         </div>
 
         <div class="hidden text-right sm:block">

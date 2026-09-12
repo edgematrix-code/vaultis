@@ -99,14 +99,14 @@ function copyAddress(address: string) {
             <div
                 v-for="b in balances"
                 :key="b.chain"
-                class="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5"
+                class="border-border bg-card flex flex-col gap-5 rounded-2xl border p-6"
             >
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
                         <ChainGlyph :chain="b.chain" />
                         <div>
                             <p class="text-foreground text-sm font-medium">
-                                {{ CHAINS[b.chain]?.symbol || b.chain.toUpperCase() }}
+                                {{ CHAINS[b.chain]?.name || b.chain.toUpperCase() }}
                             </p>
                             <p class="text-vault-ink-dim text-xs">
                                 {{ CHAINS[b.chain]?.network || b.chain }}

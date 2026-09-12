@@ -25,7 +25,6 @@ export const Link = defineComponent({
         replace: { type: Boolean, default: false },
         as: { type: String, default: 'a' },
         tabindex: { type: Number, default: undefined },
-        ...RouterLink.props,
     },
     inheritAttrs: true,
     setup(props, { slots, attrs }) {

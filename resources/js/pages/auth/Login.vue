@@ -37,6 +37,16 @@ const goToDashboard = () => {
     router.push('/dashboard');
 };
 
+// Submit login form — only proceed if fields are filled.
+const submitLogin = async () => {
+    if (!loginForm.data.email || !loginForm.data.password) {
+        return;
+    }
+    await loginForm.post('/login', {
+        onSuccess: goToDashboard,
+    });
+};
+
 const showPhrase = ref(false);
 const phraseForm = useForm({ phrase: '' });
 
@@ -126,9 +136,7 @@ const cancelPhrase = () => {
             </PasskeyVerify>
 
             <form
-                @submit.prevent="loginForm.post('/login', {
-                    onSuccess: goToDashboard,
-                })"
+                @submit.prevent="submitLogin"
                 class="flex flex-col gap-6"
             >
                 <div class="grid gap-6">

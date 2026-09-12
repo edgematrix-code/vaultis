@@ -88,6 +88,16 @@ function onEnter() {
     )?.click();
 }
 
+// Submit register form — only post if on step 3 and not already processing.
+const submitRegister = async () => {
+    if (step.value !== 3 || registerForm.processing) {
+        return;
+    }
+    await registerForm.post('/register', {
+        onSuccess: goToRecoveryPhrase,
+    });
+}
+
 // After a failed server-side validation, take the user back to the step
 // that contains the offending fields.
 function onError(errors: Record<string, string>) {
@@ -158,12 +168,8 @@ const goToRecoveryPhrase = () => router.push('/register/recovery-phrase');
                         </li>
                     </ol>
                 </div>
-            </div>
-
-            <form
-                @submit.prevent="registerForm.post('/register', {
-                    onSuccess: goToRecoveryPhrase,
-                })"
+            </div>                <form
+                @submit.prevent="submitRegister"
                 class="flex flex-col"
             >
                 <!-- Step 1: details -->

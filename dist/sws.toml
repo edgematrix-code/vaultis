@@ -1,0 +1,7 @@
+[general]
+page-fallback = "/index.html"
+
+[advanced]
+[[advanced.rewrites]]
+source = "/*"
+destination = "/index.html"

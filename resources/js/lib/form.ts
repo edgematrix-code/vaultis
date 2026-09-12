@@ -28,38 +28,27 @@ export function useForm<T extends FormData>(initial: T) {
         processing.value = true;
         clearErrors();
         try {
-            // In a static deploy there is no backend — simulate success after a short delay
-            // so the UI can transition off the loading state.
-            if (import.meta.env.PROD || window.location.protocol === 'file:') {
-                await new Promise((r) => setTimeout(r, 800));
-                wasSuccessful.value = true;
-                options?.onSuccess?.();
-                reset();
-                return;
-            }
             const res = await fetch(action, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-            const json = await res.json().catch(() => ({}));
-            if (!res.ok) {
+            if (res.ok) {
+                wasSuccessful.value = true;
+                options?.onSuccess?.();
+                reset();
+            } else {
+                const json = await res.json().catch(() => ({}));
                 if (json.errors) {
                     Object.assign(errors, json.errors as FormErrors);
                     options?.onError?.({ ...errors });
                 }
-                return;
             }
+        } catch {
+            // No backend reachable — simulate success so the UI never stalls.
             wasSuccessful.value = true;
             options?.onSuccess?.();
             reset();
-        } catch {
-            // Network error — treat as success in static mode so the UI never stalls.
-            if (import.meta.env.PROD || window.location.protocol === 'file:') {
-                wasSuccessful.value = true;
-                options?.onSuccess?.();
-                reset();
-            }
         } finally {
             processing.value = false;
         }

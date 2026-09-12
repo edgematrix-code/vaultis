@@ -77,9 +77,7 @@ const cancelPhrase = () => {
                 class="mb-4 text-center text-sm font-medium text-green-600"
             >
                 {{ status }}
-            </div>
-
-            <PasskeyVerify>
+            </div>                <PasskeyVerify>
                 <Button
                     v-if="!showPhrase"
                     type="button"

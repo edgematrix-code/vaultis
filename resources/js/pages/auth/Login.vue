@@ -191,16 +191,7 @@ const cancelPhrase = () => {
                         </Label>
                     </div>
 
-                    <Button
-                        type="submit"
-                        class="mt-4 w-full"
-                        :tabindex="4"
-                        :disabled="loginForm.processing"
-                        data-test="login-button"
-                    >
-                        <Spinner v-if="loginForm.processing" />
-                        Log in
-                    </Button>
+
                 </div>
 
                 <div class="text-muted-foreground text-center text-sm">

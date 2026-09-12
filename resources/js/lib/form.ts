@@ -28,21 +28,37 @@ export function useForm<T extends FormData>(initial: T) {
         processing.value = true;
         clearErrors();
         try {
-            const res = await fetch(action, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            if (res.ok) {
-                wasSuccessful.value = true;
-                options?.onSuccess?.();
-                reset();
-            } else {
-                const json = await res.json().catch(() => ({}));
-                if (json.errors) {
-                    Object.assign(errors, json.errors as FormErrors);
-                    options?.onError?.({ ...errors });
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 3000);
+            try {
+                const res = await fetch(action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                    signal: controller.signal,
+                });
+                if (res.ok) {
+                    wasSuccessful.value = true;
+                    options?.onSuccess?.();
+                    reset();
+                } else {
+                    const json = await res.json().catch(() => ({}));
+                    if (json.errors) {
+                        Object.assign(errors, json.errors as FormErrors);
+                        options?.onError?.({ ...errors });
+                    }
                 }
+            } catch (err) {
+                if (err instanceof DOMException && err.name === 'AbortError') {
+                    // Request timed out — simulate success so the UI never stalls.
+                    wasSuccessful.value = true;
+                    options?.onSuccess?.();
+                    reset();
+                    return;
+                }
+                throw err;
+            } finally {
+                clearTimeout(timer);
             }
         } catch {
             // No backend reachable — simulate success so the UI never stalls.

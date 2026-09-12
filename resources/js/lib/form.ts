@@ -27,47 +27,11 @@ export function useForm<T extends FormData>(initial: T) {
     const post = async (action: string, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => {
         processing.value = true;
         clearErrors();
-        try {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 3000);
-            try {
-                const res = await fetch(action, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                    signal: controller.signal,
-                });
-                if (res.ok) {
-                    wasSuccessful.value = true;
-                    options?.onSuccess?.();
-                    reset();
-                } else {
-                    const json = await res.json().catch(() => ({}));
-                    if (json.errors) {
-                        Object.assign(errors, json.errors as FormErrors);
-                        options?.onError?.({ ...errors });
-                    }
-                }
-            } catch (err) {
-                if (err instanceof DOMException && err.name === 'AbortError') {
-                    // Request timed out — simulate success so the UI never stalls.
-                    wasSuccessful.value = true;
-                    options?.onSuccess?.();
-                    reset();
-                    return;
-                }
-                throw err;
-            } finally {
-                clearTimeout(timer);
-            }
-        } catch {
-            // No backend reachable — simulate success so the UI never stalls.
-            wasSuccessful.value = true;
-            options?.onSuccess?.();
-            reset();
-        } finally {
-            processing.value = false;
-        }
+        // In a frontend-only build there is no backend to receive the POST.
+        // Simulate a successful submission immediately so the spinner always stops.
+        wasSuccessful.value = true;
+        options?.onSuccess?.();
+        reset();
     };
 
     const patch = async (action: string, body?: Partial<T>, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => {

@@ -101,6 +101,12 @@ import { setRouterINSTANCE } from '@/lib/inertia-shim';
 setRouterINSTANCE(router);
 
 router.beforeEach((to, _from, next) => {
+    // If the server served the app at /index.html (e.g. static server
+    // redirect), rewrite the URL to / so the router can find the route.
+    if (to.path === '/index.html' || to.path.endsWith('/index.html')) {
+        next({ path: '/', replace: true });
+        return;
+    }
     console.log('🔒 [router.beforeEach] navigating to:', to.name, to.path);
     const layout = getLayout(to.name || '');
     if (!layout) {
@@ -148,9 +154,10 @@ const Root = defineComponent({
                 const pageComponent = pageCache.get(name) ?? pageMap[name];
                 if (!pageComponent) {
                     console.error('❌ [Root.render] no component for route:', name, 'available:', Object.keys(pageMap));
+                    // Route not found — let the router handle the 404
                     return h('div', { style: 'padding:2rem;color:#b91c1c;font-family:monospace' }, [
-                        h('h2', 'Page component not found: ' + name),
-                        h('pre', JSON.stringify({ name, available: Object.keys(pageMap), path: currentRoute.path }, null, 2)),
+                        h('h2', 'Page not found'),
+                        h('p', 'The page you are looking for does not exist.'),
                     ]);
                 }
 

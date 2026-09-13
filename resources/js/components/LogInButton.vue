@@ -6,10 +6,6 @@ defineProps<{
     loading?: boolean;
     disabled?: boolean;
 }>();
-
-const emit = defineEmits<{
-    submit: [];
-}>();
 </script>
 
 <template>
@@ -18,7 +14,6 @@ const emit = defineEmits<{
         class="mt-4 w-full"
         :disabled="disabled || loading"
         data-test="login-button"
-        @click="emit('submit')"
     >
         <Spinner v-if="loading" />
         Log in

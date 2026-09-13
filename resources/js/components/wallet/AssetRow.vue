@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { Link } from '@/lib/inertia-shim';
+import { RouterLink } from 'vue-router';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
 import { CHAINS, formatCrypto, formatPct, formatUsd } from '@/lib/wallet-data';
 import { useCoinGecko } from '@/composables/useCoinGecko';
@@ -99,8 +99,8 @@ const changeColor = computed(() => {
 </script>
 
 <template>
-    <Link
-        :href="`/wallet/receive?chain=${balance.chain}`"
+    <RouterLink
+        :to="`/wallet/receive?chain=${balance.chain}`"
         class="hover:bg-secondary/60 flex flex-col gap-1 rounded-xl px-4 py-4 transition-colors"
     >
         <div class="flex items-center gap-3">
@@ -147,5 +147,5 @@ const changeColor = computed(() => {
                 </span>
             </div>
         </div>
-    </Link>
+    </RouterLink>
 </template>

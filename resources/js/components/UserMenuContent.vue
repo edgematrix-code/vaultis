@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Link, router } from '@/lib/inertia-shim';
+import { RouterLink } from 'vue-router';
+import { router } from '@/lib/inertia-shim';
 import { LogOut, Settings } from '@lucide/vue';
 import {
     DropdownMenuGroup,
@@ -32,23 +33,21 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
+            <RouterLink class="block w-full cursor-pointer" :to="edit()">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
-            </Link>
+            </RouterLink>
         </DropdownMenuItem>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
-        <Link
+        <button
             class="block w-full cursor-pointer"
-            :href="logout()"
             @click="handleLogout"
-            as="button"
             data-test="logout-button"
         >
             <LogOut class="mr-2 h-4 w-4" />
             Log out
-        </Link>
+        </button>
     </DropdownMenuItem>
 </template>

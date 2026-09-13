@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router';
 import { Link } from '@/lib/inertia-shim';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
@@ -54,11 +55,12 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                             { 'bg-muted': isCurrentOrParentUrl(item.href) },
                         ]"
                         as-child
+                        @click.stop
                     >
-                        <Link :href="item.href">
+                        <RouterLink :to="item.href">
                             <component :is="item.icon" class="h-4 w-4" />
                             {{ item.title }}
-                        </Link>
+                        </RouterLink>
                     </Button>
                 </nav>
             </aside>

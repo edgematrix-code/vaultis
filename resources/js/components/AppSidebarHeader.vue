@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@/lib/inertia-shim';
+import { RouterLink } from 'vue-router';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -28,8 +28,8 @@ withDefaults(
 
         <!-- Brand mark on the right edge of the top bar, mobile only (the
              desktop sidebar already shows the full logo). -->
-        <Link href="/dashboard" class="ml-auto lg:hidden">
+        <RouterLink to="/dashboard" class="ml-auto lg:hidden">
             <AppLogoIcon class="h-7 w-auto" />
-        </Link>
+        </RouterLink>
     </header>
 </template>

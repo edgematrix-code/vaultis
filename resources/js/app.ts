@@ -54,6 +54,8 @@ function getLayout(name: string) {
             return AuthLayout;
         case name.startsWith('settings/'):
             return [AppLayout, SettingsLayout];
+        case name === 'Support':
+            return AppLayout;
         default:
             return AppLayout;
     }
@@ -80,6 +82,7 @@ const routes = [
     { path: '/settings/security', name: 'settings/Security', component: SecurityPage },
     { path: '/settings/notifications', name: 'settings/Notifications', component: NotificationsPage },
     { path: '/settings/appearance', name: 'settings/Appearance', component: AppearancePage },
+    { path: '/support', name: 'Support', component: WelcomePage },
     { path: '/forgot-password', name: 'auth/ForgotPassword', component: ForgotPasswordPage },
     { path: '/reset-password/:token', name: 'auth/ResetPassword', component: ResetPasswordPage },
     { path: '/email/verify', name: 'auth/VerifyEmail', component: VerifyEmailPage },

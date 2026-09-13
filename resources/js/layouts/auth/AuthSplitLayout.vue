@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@/lib/inertia-shim';
+import { RouterLink } from 'vue-router';
 import { Fingerprint, Layers, ShieldCheck } from '@lucide/vue';
 import LightTunnel from '@/components/LightTunnel.vue';
 import { home } from '@/routes';
@@ -77,7 +77,7 @@ const highlights = [
             <div
                 class="relative z-10 flex h-full flex-col justify-between p-10 xl:p-14"
             >
-                <Link :href="home.url()" class="flex w-fit items-center gap-2.5">
+                <RouterLink :to="home.url()" class="flex w-fit items-center gap-2.5">
                     <img
                         src="/brand/vaultis-mark.png"
                         alt=""
@@ -88,7 +88,7 @@ const highlights = [
                     >
                         Vaultis
                     </span>
-                </Link>
+                </RouterLink>
 
                 <div class="max-w-md">
                     <p
@@ -127,8 +127,8 @@ const highlights = [
 
         <!-- Form panel -->
         <div class="flex min-h-svh flex-col overflow-y-auto">
-            <Link
-                :href="home.url()"
+            <RouterLink
+                :to="home.url()"
                 class="flex w-fit items-center gap-2 px-6 pt-6 lg:hidden"
             >
                 <img
@@ -139,7 +139,7 @@ const highlights = [
                 <span class="font-display text-xl font-bold tracking-tight">
                     Vaultis
                 </span>
-            </Link>
+            </RouterLink>
 
             <div
                 class="flex flex-1 items-center justify-center px-6 py-10 sm:px-10"

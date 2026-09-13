@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router';
 import { Link } from '@/lib/inertia-shim';
 import {
     SidebarGroup,
@@ -42,10 +43,10 @@ function isExternal(href: string) {
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
                         </a>
-                        <Link v-else :href="item.href">
+                        <RouterLink v-else :to="item.href">
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
-                        </Link>
+                        </RouterLink>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

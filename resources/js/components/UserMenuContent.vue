@@ -33,7 +33,7 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <RouterLink class="block w-full cursor-pointer" :to="edit()">
+            <RouterLink class="block w-full cursor-pointer" :to="edit.url()">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </RouterLink>

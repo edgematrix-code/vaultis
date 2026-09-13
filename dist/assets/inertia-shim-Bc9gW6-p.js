@@ -1,1 +1,0 @@
-import{n as e}from"./inertia-shim-DXq-FXcg.js";export{e as Head};

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { Head, Link } from '@/lib/inertia-shim';
 import { ArrowLeft, ExternalLink } from '@lucide/vue';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
@@ -17,7 +18,16 @@ const props = defineProps<{
     transaction?: Transaction;
 }>();
 
-const transaction = computed(() => props.transaction ?? MOCK_TRANSACTIONS[0]);
+const route = useRoute();
+
+const transaction = computed(() => {
+    if (props.transaction) return props.transaction;
+    const id = route.params.id as string | undefined;
+    const found = MOCK_TRANSACTIONS.find(
+        (t) => t.id.toLowerCase() === id?.toLowerCase(),
+    );
+    return found ?? MOCK_TRANSACTIONS[0];
+});
 const chain = computed(() => CHAINS[transaction.value.chain]);
 
 defineOptions({
@@ -73,22 +83,22 @@ const rows = computed(() => [
 
         <div class="border-border bg-card rounded-2xl border p-6">
             <div class="flex items-center gap-3">
-                <ChainGlyph :chain="props.transaction.chain" size="lg" />
+                <ChainGlyph :chain="transaction.chain" size="lg" />
                 <div>
                     <p class="text-foreground text-lg font-semibold capitalize">
-                        {{ props.transaction.type }} · {{ chain.name }}
+                        {{ transaction.type }} · {{ chain.name }}
                     </p>
                     <p class="text-vault-ink-dim text-xs">
-                        {{ props.transaction.id }}
+                        {{ transaction.id }}
                     </p>
                 </div>
             </div>
 
             <div
-                v-if="props.transaction.note"
+                v-if="transaction.note"
                 class="border-vault-rose/30 bg-vault-rose/10 text-vault-rose mt-4 rounded-xl border p-3 text-sm"
             >
-                {{ props.transaction.note }}
+                {{ transaction.note }}
             </div>
 
             <dl class="divide-border mt-6 divide-y">
@@ -107,7 +117,7 @@ const rows = computed(() => [
                     >
                         <TransactionStatusBadge
                             v-if="row.badge"
-                            :status="props.transaction.status"
+                            :status="transaction.status"
                         />
                         <span v-else class="tnum">{{ row.value }}</span>
                     </dd>
@@ -115,12 +125,7 @@ const rows = computed(() => [
             </dl>
 
             <a
-                :href="
-                    explorerUrl(
-                        props.transaction.chain,
-                        props.transaction.txHash,
-                    )
-                "
+                :href="explorerUrl(transaction.chain, transaction.txHash)"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="border-border text-foreground hover:border-vault-mint/40 hover:text-vault-mint mt-6 flex items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-medium"

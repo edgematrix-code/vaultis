@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { Head, Link } from '@/lib/inertia-shim';
 import { RouterLink as RouterLinkComponent } from 'vue-router';
-import { Download, Search } from '@lucide/vue';
+import { ArrowDownLeft, ArrowUpRight, Download, Search } from '@lucide/vue';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
 import TransactionStatusBadge from '@/components/wallet/TransactionStatusBadge.vue';
 import { Input } from '@/components/ui/input';
@@ -59,6 +59,22 @@ const filtered = computed(() =>
         }
         return true;
     }),
+);
+
+const completed = computed(() =>
+    transactions.value.filter((t) => t.status === 'completed'),
+);
+
+const totalDeposited = computed(() =>
+    completed.value
+        .filter((t) => t.type === 'deposit')
+        .reduce((sum, t) => sum + t.usdValue, 0),
+);
+
+const totalWithdrawn = computed(() =>
+    completed.value
+        .filter((t) => t.type === 'withdrawal')
+        .reduce((sum, t) => sum + t.usdValue, 0),
 );
 
 function exportCsv() {
@@ -151,6 +167,42 @@ function exportCsv() {
             </Select>
         </div>
 
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="border-border bg-card rounded-2xl border p-5">
+                <p class="text-vault-ink-dim text-xs font-medium tracking-widest uppercase">
+                    Total deposited
+                </p>
+                <p class="tnum text-foreground mt-1 text-lg font-semibold">
+                    {{ formatUsd(totalDeposited) }}
+                </p>
+                <p class="text-vault-ink-dim mt-0.5 text-xs">
+                    across {{ completed.filter((t) => t.type === 'deposit').length }} deposits
+                </p>
+            </div>
+            <div class="border-border bg-card rounded-2xl border p-5">
+                <p class="text-vault-ink-dim text-xs font-medium tracking-widest uppercase">
+                    Total withdrawn
+                </p>
+                <p class="tnum text-foreground mt-1 text-lg font-semibold">
+                    {{ formatUsd(totalWithdrawn) }}
+                </p>
+                <p class="text-vault-ink-dim mt-0.5 text-xs">
+                    across {{ completed.filter((t) => t.type === 'withdrawal').length }} withdrawals
+                </p>
+            </div>
+            <div class="border-border bg-card rounded-2xl border p-5">
+                <p class="text-vault-ink-dim text-xs font-medium tracking-widest uppercase">
+                    Net holdings
+                </p>
+                <p class="tnum text-foreground mt-1 text-lg font-semibold">
+                    {{ formatUsd(totalDeposited - totalWithdrawn) }}
+                </p>
+                <p class="text-vault-ink-dim mt-0.5 text-xs">
+                    deposited − withdrawn = current balance
+                </p>
+            </div>
+        </div>
+
         <div class="border-border bg-card overflow-hidden rounded-2xl border">
             <div
                 class="border-border text-vault-ink-dim hidden grid-cols-[auto_1fr_1fr_1fr_auto_auto] gap-4 border-b px-5 py-3 text-xs font-medium sm:grid"
@@ -170,10 +222,34 @@ function exportCsv() {
                 class="border-border hover:bg-secondary/50 grid grid-cols-2 items-center gap-3 border-b px-5 py-4 transition-colors last:border-b-0 sm:grid-cols-[auto_1fr_1fr_1fr_auto_auto] sm:gap-4"
             >
                 <div class="flex items-center gap-2.5">
+                    <span
+                        class="flex size-5 shrink-0 items-center justify-center rounded-full"
+                        :class="
+                            t.type === 'deposit'
+                                ? 'bg-vault-mint/15 text-vault-mint'
+                                : t.type === 'withdrawal'
+                                  ? 'bg-vault-rose/15 text-vault-rose'
+                                  : 'bg-muted text-muted-foreground'
+                        "
+                        :aria-label="t.type"
+                    >
+                        <ArrowDownLeft v-if="t.type === 'deposit'" class="size-3" />
+                        <ArrowUpRight
+                            v-else-if="t.type === 'withdrawal'"
+                            class="size-3"
+                        />
+                        <ArrowDownLeft v-else class="size-3" />
+                    </span>
                     <ChainGlyph :chain="t.chain" size="sm" />
-                    <span class="text-foreground text-sm font-medium">{{
-                        CHAINS[t.chain].symbol
-                    }}</span>
+                    <div class="min-w-0">
+                        <p class="text-foreground text-sm font-medium">
+                            <span class="capitalize">{{ t.type }}</span>
+                            · {{ CHAINS[t.chain].symbol }}
+                        </p>
+                        <p class="text-vault-ink-dim text-xs sm:hidden">
+                            {{ formatRelativeTime(t.createdAt) }}
+                        </p>
+                    </div>
                 </div>
                 <span
                     class="text-foreground hidden text-sm capitalize sm:block"
@@ -187,12 +263,22 @@ function exportCsv() {
                     formatRelativeTime(t.createdAt)
                 }}</span>
                 <div class="text-right">
-                    <p class="tnum text-foreground text-sm font-medium">
+                    <p
+                        class="tnum text-sm font-medium"
+                        :class="
+                            t.type === 'deposit'
+                                ? 'text-vault-mint'
+                                : t.type === 'withdrawal'
+                                  ? 'text-foreground'
+                                  : 'text-foreground'
+                        "
+                    >
+                        {{ t.type === 'deposit' ? '+' : '−' }}
                         {{ formatCrypto(t.amount) }}
                         {{ CHAINS[t.chain].symbol }}
                     </p>
                     <p class="tnum text-vault-ink-dim text-xs">
-                        {{ formatUsd(t.usdValue) }}
+                        ≈ {{ formatUsd(t.usdValue) }}
                     </p>
                 </div>
                 <div class="flex justify-end">

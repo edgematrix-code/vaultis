@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/auth/AuthSimpleLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import WelcomePage from '@/pages/Welcome.vue';
+import SupportPage from '@/pages/Support.vue';
 import LoginPage from '@/pages/auth/Login.vue';
 import RegisterPage from '@/pages/auth/Register.vue';
 import RecoveryPhrasePage from '@/pages/auth/RecoveryPhrase.vue';
@@ -29,6 +30,7 @@ import ResetPasswordPage from '@/pages/auth/ResetPassword.vue';
 import VerifyEmailPage from '@/pages/auth/VerifyEmail.vue';
 import ConfirmPasswordPage from '@/pages/auth/ConfirmPassword.vue';
 import TwoFactorChallengePage from '@/pages/auth/TwoFactorChallenge.vue';
+import NotFoundPage from '@/pages/NotFound.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
 import { toast } from 'vue-sonner';
 
@@ -56,6 +58,8 @@ function getLayout(name: string) {
             return [AppLayout, SettingsLayout];
         case name === 'Support':
             return AppLayout;
+        case name === 'NotFound':
+            return null;
         default:
             return AppLayout;
     }
@@ -78,11 +82,13 @@ const routes = [
     { path: '/wallet/withdraw', name: 'wallet/Withdraw', component: WalletWithdrawPage },
     { path: '/transactions', name: 'transactions/Index', component: TransactionsIndexPage },
     { path: '/transactions/:id', name: 'transactions/Show', component: TransactionShowPage },
+    { path: '/settings', redirect: '/settings/profile' },
     { path: '/settings/profile', name: 'settings/Profile', component: ProfilePage },
     { path: '/settings/security', name: 'settings/Security', component: SecurityPage },
     { path: '/settings/notifications', name: 'settings/Notifications', component: NotificationsPage },
     { path: '/settings/appearance', name: 'settings/Appearance', component: AppearancePage },
-    { path: '/support', name: 'Support', component: WelcomePage },
+    { path: '/support', name: 'Support', component: SupportPage },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundPage },
     { path: '/forgot-password', name: 'auth/ForgotPassword', component: ForgotPasswordPage },
     { path: '/reset-password/:token', name: 'auth/ResetPassword', component: ResetPasswordPage },
     { path: '/email/verify', name: 'auth/VerifyEmail', component: VerifyEmailPage },
@@ -172,9 +178,16 @@ const Root = defineComponent({
                 }
 
                 if (Array.isArray(raw)) {
+                    // Nest layouts outer→inner. Each slot closes over its OWN vnode
+                    // (a fresh `child` binding), never the shared mutable `inner`,
+                    // otherwise the outermost layout's slot ends up rendering the
+                    // outermost layout again — an infinite mount loop (stack overflow).
                     let inner = h(pageComponent as unknown as object, { key: name });
                     for (let i = raw.length - 1; i >= 0; i--) {
-                        inner = h(raw[i] as unknown as object, { key: 'l' + i }, { default: () => inner });
+                        const child = inner;
+                        inner = h(raw[i] as unknown as object, { key: 'l' + i }, {
+                            default: () => child,
+                        });
                     }
                     return inner;
                 }

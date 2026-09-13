@@ -57,9 +57,13 @@ export function useForm<T extends FormData>(initial: T) {
 
             // Simulate successful submission (no backend)
             wasSuccessful.value = true;
-            options?.onSuccess?.();
-        } catch (err) {
-            console.error('post() onSuccess handler threw:', err);
+            try {
+                options?.onSuccess?.();
+            } catch (err) {
+                // A throwing onSuccess handler (e.g. a navigation error) must not
+                // leave `processing` stuck at true, freezing the submit button.
+                console.error('post() onSuccess handler threw:', err);
+            }
         } finally {
             reset();
             processing.value = false;

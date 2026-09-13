@@ -1,0 +1,1 @@
+import{n as e}from"./inertia-shim-CKkfuY2e.js";export{e as Head};

@@ -139,7 +139,7 @@ export const TOKEN_NETWORKS: Record<ChainId, ChainId[]> = {
 };
 
 /** Deposit/receive addresses per token + network */
-export const TOKEN_ADDRESSES: Record<ChainId, Record<ChainId, string>> = {
+export const TOKEN_ADDRESSES: Record<ChainId, Partial<Record<ChainId, string>>> = {
     btc: { btc: 'bc1qys0x2xvd39auaakxh9q7ek64skn6ftfyzsplga' },
     eth: { eth: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
     bsc: { bsc: '0xaB270D8d31C2fBE1fE0B5D2E9A974c44AA821c10' },
@@ -260,4 +260,22 @@ export function formatRelativeTime(iso: string) {
         day: 'numeric',
         year: 'numeric',
     });
+}
+
+/** Long-form relative time, e.g. "2 years ago", "5 months ago". */
+export function formatRelativeTimeLong(iso: string) {
+    const date = new Date(iso);
+    const diffMin = Math.round((Date.now() - date.getTime()) / 60_000);
+    if (diffMin < 1) return 'just now';
+    if (diffMin < 60)
+        return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+    const diffHr = Math.round(diffMin / 60);
+    if (diffHr < 24) return `${diffHr} hour${diffHr === 1 ? '' : 's'} ago`;
+    const diffDay = Math.round(diffHr / 24);
+    if (diffDay < 30) return `${diffDay} day${diffDay === 1 ? '' : 's'} ago`;
+    const diffMonth = Math.round(diffDay / 30.44);
+    if (diffMonth < 12)
+        return `${diffMonth} month${diffMonth === 1 ? '' : 's'} ago`;
+    const diffYear = Math.max(1, Math.round(diffDay / 365.25));
+    return `${diffYear} year${diffYear === 1 ? '' : 's'} ago`;
 }

@@ -54,7 +54,6 @@ useEventListener("keydown", (event: KeyboardEvent) => {
 // This makes it easier to style the sidebar with Tailwind classes.
 const state = computed(() => open.value ? "expanded" : "collapsed")
 
-console.log('[SidebarProvider] providing context, open:', open.value, 'isMobile:', isMobile.value);
 provideSidebarContext({
   state,
   open,

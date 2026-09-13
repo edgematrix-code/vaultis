@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { Link } from '@/lib/inertia-shim';
+import { Bell, Palette, ShieldCheck, User } from '@lucide/vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -14,19 +14,23 @@ import type { NavItem } from '@/types';
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: editProfile(),
+        href: editProfile.url(),
+        icon: User,
     },
     {
         title: 'Security',
-        href: editSecurity(),
+        href: editSecurity.url(),
+        icon: ShieldCheck,
     },
     {
         title: 'Notifications',
         href: '/settings/notifications',
+        icon: Bell,
     },
     {
         title: 'Appearance',
-        href: editAppearance(),
+        href: editAppearance.url(),
+        icon: Palette,
     },
 ];
 
@@ -58,7 +62,11 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                         @click.stop
                     >
                         <RouterLink :to="item.href">
-                            <component :is="item.icon" class="h-4 w-4" />
+                            <component
+                                :is="item.icon"
+                                v-if="item.icon"
+                                class="h-4 w-4"
+                            />
                             {{ item.title }}
                         </RouterLink>
                     </Button>

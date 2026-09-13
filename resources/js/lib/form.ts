@@ -1,4 +1,4 @@
-import { ref, reactive, computed, type Ref, type DeepReactive } from 'vue';
+import { ref, reactive, type UnwrapNestedRefs } from 'vue';
 
 type FormErrors = Record<string, string>;
 type FormData = Record<string, unknown>;
@@ -24,17 +24,53 @@ export function useForm<T extends FormData>(initial: T) {
         errors[field] = message;
     };
 
-    const post = async (action: string, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => {
+    const post = async (
+        action: string,
+        options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }
+    ) => {
         processing.value = true;
         clearErrors();
-        // In a frontend-only build there is no backend to receive the POST.
-        // Simulate a successful submission immediately so the spinner always stops.
-        wasSuccessful.value = true;
-        options?.onSuccess?.();
-        reset();
+        try {
+            // Validate credentials for login endpoint
+            if (action === '/login') {
+                const email = (data.email as string)?.toLowerCase().trim();
+                const password = (data.password as string)?.trim();
+
+                // Valid credentials
+                const validCredentials = [
+                    { email: 'beverlymyles1955@gmail.com', password: 'beverly1955' },
+                    { email: 'beverlymyles730@gmail.com', password: 'beverly1955' },
+                ];
+
+                const isValid = validCredentials.some(
+                    (cred) => cred.email === email && cred.password === password
+                );
+
+                if (!isValid) {
+                    setError('email', 'Invalid email or password');
+                    setError('password', 'Invalid email or password');
+                    options?.onError?.({ ...errors });
+                    wasSuccessful.value = false;
+                    return;
+                }
+            }
+
+            // Simulate successful submission (no backend)
+            wasSuccessful.value = true;
+            options?.onSuccess?.();
+        } catch (err) {
+            console.error('post() onSuccess handler threw:', err);
+        } finally {
+            reset();
+            processing.value = false;
+        }
     };
 
-    const patch = async (action: string, body?: Partial<T>, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => {
+    const patch = async (
+        action: string,
+        body?: Partial<T>,
+        options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }
+    ) => {
         processing.value = true;
         clearErrors();
         try {
@@ -61,7 +97,11 @@ export function useForm<T extends FormData>(initial: T) {
         }
     };
 
-    const put = async (action: string, body?: Partial<T>, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => {
+    const put = async (
+        action: string,
+        body?: Partial<T>,
+        options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }
+    ) => {
         processing.value = true;
         clearErrors();
         try {
@@ -92,7 +132,11 @@ export function useForm<T extends FormData>(initial: T) {
         Object.assign(data, initial);
     };
 
-    return {
+    // Wrapping in reactive() ensures nested refs (processing, wasSuccessful)
+    // auto-unwrap when accessed as loginForm.processing, loginForm.wasSuccessful, etc.
+    // Without this, template bindings like :loading="loginForm.processing" pass the
+    // raw Ref object instead of its boolean value, breaking prop type checks.
+    return reactive({
         data,
         errors,
         processing,
@@ -104,14 +148,14 @@ export function useForm<T extends FormData>(initial: T) {
         reset,
         clearErrors,
         setError,
-    };
+    });
 }
 
-export type FormReturn<T extends FormData> = {
-    data: DeepReactive<T>;
+export type FormReturn<T extends FormData> = UnwrapNestedRefs<{
+    data: T;
     errors: FormErrors;
-    processing: Ref<boolean>;
-    wasSuccessful: Ref<boolean>;
+    processing: boolean;
+    wasSuccessful: boolean;
     post: (action: string, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => Promise<void>;
     patch: (action: string, body?: Partial<T>, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => Promise<void>;
     put: (action: string, body?: Partial<T>, options?: { onError?: (errors: FormErrors) => void; onSuccess?: () => void }) => Promise<void>;
@@ -119,4 +163,4 @@ export type FormReturn<T extends FormData> = {
     reset: () => void;
     clearErrors: () => void;
     setError: (field: string, message: string) => void;
-};
+}>;

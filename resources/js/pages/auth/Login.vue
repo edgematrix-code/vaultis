@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import LogInButton from '@/components/LogInButton.vue'
 import AuthSplitLayout from '@/layouts/auth/AuthSplitLayout.vue'
+import WelcomeModal from '@/components/WelcomeModal.vue'
 import { useForm } from '@/lib/form'
 
 defineProps<{
@@ -27,8 +28,28 @@ const loginForm = useForm({
 })
 
 const goToDashboard = () => {
+  // Store user info for the welcome modal
   sessionStorage.setItem('justLoggedIn', 'true')
-  router.push('/dashboard')
+  sessionStorage.setItem('userEmail', loginForm.data.email as string)
+  
+  // Show welcome modal, then navigate to dashboard
+  showWelcomeModal()
+  
+  // Navigate after modal has been visible for a bit
+  setTimeout(() => {
+    router.push('/dashboard')
+  }, 3000)
+}
+
+// User info for welcome modal
+const userName = ref('Beverly Myles')
+const userEmail = ref(loginForm.data.email as string)
+const showModal = ref(false)
+
+const showWelcomeModal = () => {
+  userName.value = 'Beverly Myles'
+  userEmail.value = loginForm.data.email as string
+  showModal.value = true
 }
 
 const submitLogin = async () => {
@@ -55,6 +76,12 @@ const submitLogin = async () => {
       >
         {{ status }}
       </div>
+
+      <WelcomeModal
+        v-if="showModal"
+        :name="userName"
+        :email="userEmail"
+      />
 
       <form
         @submit.prevent="submitLogin"

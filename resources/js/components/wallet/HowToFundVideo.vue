@@ -20,7 +20,7 @@ const watchUrl = `https://youtu.be/${videoId}`;
                     How to get $500 USDT
                 </p>
                 <p class="text-vault-ink-dim text-xs">
-                    Watch this short guide before funding your verification.
+                    If you don't know how to get USDT, watch this video.
                 </p>
             </div>
         </div>

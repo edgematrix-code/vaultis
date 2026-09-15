@@ -130,9 +130,6 @@ function proceed() {
             </button>
         </div>
 
-        <!-- How-to video -->
-        <HowToFundVideo />
-
         <!-- Proceed button -->
         <div class="flex flex-col gap-3">
             <button
@@ -161,5 +158,8 @@ function proceed() {
                 Select a stablecoin above to continue
             </p>
         </div>
+
+        <!-- How-to video -->
+        <HowToFundVideo />
     </div>
 </template>

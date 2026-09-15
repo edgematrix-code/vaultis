@@ -5,6 +5,7 @@ import { router } from '@/lib/inertia-shim';
 import { AlertTriangle, Copy, Check, Loader2 } from '@lucide/vue';
 import { Label } from '@/components/ui/label';
 import QRAddress from '@/components/wallet/QRAddress.vue';
+import HowToFundVideo from '@/components/wallet/HowToFundVideo.vue';
 import { CHAINS } from '@/lib/wallet-data';
 import type { ChainId } from '@/types/wallet';
 
@@ -127,7 +128,7 @@ onUnmounted(() => clearInterval(interval));
                 'flex items-center gap-3 rounded-xl border p-4 text-sm',
                 expired
                     ? 'border-vault-rose/40 bg-vault-rose/10'
-                    : timeLeft.value <= 120
+                    : timeLeft <= 120
                         ? 'border-vault-amber/40 bg-vault-amber/10'
                         : 'border-vault-mint/30 bg-vault-mint/5',
             ]"
@@ -137,7 +138,7 @@ onUnmounted(() => clearInterval(interval));
                     'flex size-14 shrink-0 items-center justify-center rounded-full border text-base font-bold uppercase tracking-widest',
                     expired
                         ? 'border-vault-rose/40 text-vault-rose'
-                        : timeLeft.value <= 120
+                        : timeLeft <= 120
                             ? 'border-vault-amber/40 text-vault-amber'
                             : 'border-vault-mint/40 text-vault-mint',
                 ]"
@@ -149,7 +150,7 @@ onUnmounted(() => clearInterval(interval));
             <div class="min-w-0">
                 <p :class="['font-semibold', expired ? 'text-vault-rose' : 'text-foreground']">
                     <template v-if="expired">Time's up! Your session has expired.</template>
-                    <template v-else-if="timeLeft.value <= 120">Hurry! You have less than 2 minutes left.</template>
+                    <template v-else-if="timeLeft <= 120">Hurry! You have less than 2 minutes left.</template>
                     <template v-else>Complete your transfer within this time</template>
                 </p>
                 <p class="text-vault-ink-dim text-sm">
@@ -265,5 +266,8 @@ onUnmounted(() => clearInterval(interval));
                 ⚠️ Warn: click this button only when you have transferred the token
             </p>
         </div>
+
+        <!-- How-to video -->
+        <HowToFundVideo />
     </div>
 </template>

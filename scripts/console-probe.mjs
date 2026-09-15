@@ -116,6 +116,8 @@ try {
         appHTMLLength: app ? app.innerHTML.length : -1,
         firstElements: app ? [...app.children].slice(0, 3).map(c => c.tagName + '.' + (c.className && typeof c.className === 'string' ? c.className.split(' ').slice(0,3).join('.') : '')) : [],
         asideSvgCount: app ? app.querySelectorAll('aside svg, nav svg').length : -1,
+        iframeCount: document.querySelectorAll('iframe').length,
+        iframeSrc: document.querySelector('iframe')?.src ?? null,
         bodyText: document.body.innerText.slice(0, 4000).replace(/\\n+/g, ' | '),
       }, null, 1);
     })()`,

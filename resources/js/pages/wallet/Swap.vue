@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue';
 import { Head } from '@/lib/inertia-shim';
 import {
-    ChevronDown,
     ChevronLeft,
     Loader2,
     AlertTriangle,
@@ -12,8 +11,16 @@ import {
 } from '@lucide/vue';
 import { toast } from 'vue-sonner';
 import { useForm } from '@/lib/form';
+import { MOCK_BALANCES } from '@/lib/data';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
-import { CHAINS, explorerUrl, formatCrypto } from '@/lib/wallet-data';
+import type { AcceptableValue } from 'reka-ui';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+} from '@/components/ui/select';
+import { CHAINS, explorerUrl, formatCrypto, formatUsd } from '@/lib/wallet-data';
 import { useSwapRates } from '@/composables/useSwapRates';
 import type { ChainId } from '@/types/wallet';
 
@@ -29,7 +36,11 @@ defineOptions({
 
 const { prices, loading: ratesLoading, estimate, rate } = useSwapRates();
 
-const tokens = computed(() => Object.values(CHAINS));
+const tokenOptions = (Object.keys(CHAINS) as ChainId[]).map((id) => ({
+    id,
+    symbol: CHAINS[id].symbol,
+    name: CHAINS[id].name,
+}));
 
 const direction = ref<'src->dst' | 'dst->src'>('src->dst');
 const srcChain = ref<ChainId>('btc');
@@ -43,22 +54,26 @@ const enteredAmount = computed(() => {
     return Number.isFinite(v) && v > 0 ? v : null;
 });
 
-const srcBalance = computed(() => {
-    // In a real app this would come from the wallet balance prop.
-    // For demo we use a mock balance map.
-    const mockBalances: Record<ChainId, number> = {
-        btc: 0.002345,
-        eth: 0.0842,
-        bsc: 0.4215,
-        trx: 125.75,
-        sol: 2.5,
-        ltc: 15.0,
-        'usdt-erc': 42.5,
-        'usdt-trc': 42.5,
-        'usdt-bsc': 42.5,
-        'usdc-eth': 88.0,
-    };
-    return mockBalances[srcChain.value] ?? 0;
+const balances = computed(() => {
+    const map = new Map<ChainId, number>();
+    for (const b of MOCK_BALANCES) map.set(b.chain, b.balance);
+    return map;
+});
+
+const srcBalance = computed(() => balances.value.get(srcChain.value) ?? 0);
+const dstBalance = computed(() => balances.value.get(dstChain.value) ?? 0);
+
+// USD value of the entered / estimated amounts at live prices.
+const srcUsd = computed(() => {
+    const price = prices.value[srcChain.value]?.usd;
+    const amt = enteredAmount.value;
+    return price && amt != null ? price * amt : null;
+});
+
+const dstUsd = computed(() => {
+    const price = prices.value[dstChain.value]?.usd;
+    const est = estimatedOut.value;
+    return price && est != null ? price * est : null;
 });
 
 function swapDirection() {
@@ -69,17 +84,28 @@ function swapDirection() {
     tryUpdateEstimate();
 }
 
-function srcChainChanged() {
+function ensureDifferentTokens() {
     if (srcChain.value === dstChain.value) {
         const all = Object.keys(CHAINS) as ChainId[];
         const idx = all.indexOf(srcChain.value);
         dstChain.value = all[(idx + 1) % all.length];
     }
+}
+
+function pickSrcToken(value: AcceptableValue) {
+    srcChain.value = value as ChainId;
+    ensureDifferentTokens();
     tryUpdateEstimate();
 }
 
-function dstChainChanged() {
+function pickDstToken(value: AcceptableValue) {
+    dstChain.value = value as ChainId;
+    ensureDifferentTokens();
     tryUpdateEstimate();
+}
+
+function setSrcMax() {
+    srcAmount.value = String(srcBalance.value);
 }
 
 function tryUpdateEstimate() {
@@ -100,10 +126,19 @@ watch([srcChain, dstChain], () => {
     tryUpdateEstimate();
 });
 
+// Numeric receive amount (formatCrypto adds thousands separators — never parseFloat it).
+const estimatedOut = computed(() => {
+    const amt = enteredAmount.value;
+    if (amt == null) return null;
+    return estimate.value(srcChain.value, dstChain.value, amt);
+});
+
 const rateDisplay = computed(() => {
     const r = rate.value(srcChain.value, dstChain.value);
     if (r == null) return '—';
-    return `${formatCrypto(r, 6)} ${CHAINS[dstChain.value].symbol} per 1 ${CHAINS[srcChain.value].symbol}`;
+    const srcUsdPrice = prices.value[srcChain.value]?.usd;
+    const perToken = srcUsdPrice ? ` · ≈ ${formatUsd(srcUsdPrice)}` : '';
+    return `${formatCrypto(r, 6)} ${CHAINS[dstChain.value].symbol} per 1 ${CHAINS[srcChain.value].symbol}${perToken}`;
 });
 
 const rateLoading = computed(() => ratesLoading.value);
@@ -129,16 +164,14 @@ async function confirmSwap() {
         const form = useForm({
             srcChain: srcChain.value,
             dstChain: dstChain.value,
-            srcAmount: parseFloat(srcAmount.value),
-            dstAmount: parseFloat(dstAmount.value) || 0,
+            srcAmount: enteredAmount.value ?? 0,
+            dstAmount: estimatedOut.value ?? 0,
             rate: rate.value(srcChain.value, dstChain.value) ?? 0,
         });
         await form.post('/wallet/swap', {
-            onSuccess: (response: unknown) => {
+            onSuccess: () => {
                 processing.value = false;
-                const resp = response as Record<string, unknown> | null | undefined;
-                const hash = (resp?.txHash as string) ?? '';
-                txHash.value = hash || '0x' + Array.from({ length: 64 }, () =>
+                txHash.value = '0x' + Array.from({ length: 64 }, () =>
                     Math.floor(Math.random() * 16).toString(16)
                 ).join('');
                 state.value = 'done';
@@ -178,7 +211,7 @@ const disableSwap = computed(() => {
 
 const summary = computed(() => {
     const amt = enteredAmount.value ?? 0;
-    const est = dstAmount.value ? parseFloat(dstAmount.value) : 0;
+    const est = estimatedOut.value ?? 0;
     return `${formatCrypto(amt, 6)} ${CHAINS[srcChain.value].symbol} → ${formatCrypto(est, 6)} ${CHAINS[dstChain.value].symbol}`;
 });
 </script>
@@ -205,29 +238,42 @@ const summary = computed(() => {
                     From
                 </p>
                 <div class="mt-2 flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
-                    <button
-                        type="button"
-                        @click="direction = direction === 'src->dst' ? 'dst->src' : 'src->dst'"
-                        class="shrink-0 text-vault-ink-dim transition-colors hover:text-vault-mint"
+                    <Select
+                        :model-value="srcChain"
+                        @update:model-value="pickSrcToken"
                     >
-                        <ChevronDown class="size-5" />
-                    </button>
-                    <ChainGlyph :chain="srcChain" size="sm" />
-                    <div class="min-w-0 flex-1">
-                        <p class="text-foreground text-sm font-medium">
-                            {{ CHAINS[srcChain].symbol }}
-                        </p>
-                        <p class="text-vault-ink-dim text-xs">
-                            {{ CHAINS[srcChain].name }}
-                        </p>
-                    </div>
-                    <div class="text-right">
+                        <SelectTrigger
+                            class="w-auto border-0 bg-transparent px-1 py-0 shadow-none focus:ring-0 dark:bg-transparent dark:hover:bg-transparent"
+                            aria-label="Select token to swap from"
+                        >
+                            <span class="flex items-center gap-2">
+                                <ChainGlyph :chain="srcChain" size="sm" />
+                                <span class="text-foreground text-sm font-semibold">{{ CHAINS[srcChain].symbol }}</span>
+                            </span>
+                        </SelectTrigger>
+                        <SelectContent class="max-h-72">
+                            <SelectItem
+                                v-for="t in tokenOptions"
+                                :key="`src-${t.id}`"
+                                :value="t.id"
+                                :disabled="t.id === dstChain"
+                            >
+                                <span class="flex items-center gap-2">
+                                    <ChainGlyph :chain="t.id" size="sm" />
+                                    <span class="text-foreground text-sm font-medium">{{ t.symbol }}</span>
+                                    <span class="text-vault-ink-dim text-xs">{{ t.name }}</span>
+                                    <span class="text-vault-ink-dim text-xs ml-auto pl-3">{{ formatCrypto(balances.get(t.id) ?? 0, CHAINS[t.id].decimals) }}</span>
+                                </span>
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <div class="ml-auto text-right">
                         <p class="text-foreground text-sm font-medium">
                             {{ formatCrypto(srcBalance, CHAINS[srcChain].decimals) }}
                         </p>
                         <button
                             type="button"
-                            @click="srcAmount = String(srcBalance)"
+                            @click="setSrcMax"
                             class="text-vault-ink-dim text-xs hover:text-vault-mint"
                         >
                             Max
@@ -257,18 +303,41 @@ const summary = computed(() => {
                     To
                 </p>
                 <div class="mt-2 flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
-                    <ChainGlyph :chain="dstChain" size="sm" />
-                    <div class="min-w-0 flex-1">
-                        <p class="text-foreground text-sm font-medium">
-                            {{ CHAINS[dstChain].symbol }}
-                        </p>
-                        <p class="text-vault-ink-dim text-xs">
-                            {{ CHAINS[dstChain].name }}
-                        </p>
-                    </div>
-                    <div class="text-right">
+                    <Select
+                        :model-value="dstChain"
+                        @update:model-value="pickDstToken"
+                    >
+                        <SelectTrigger
+                            class="w-auto border-0 bg-transparent px-1 py-0 shadow-none focus:ring-0 dark:bg-transparent dark:hover:bg-transparent"
+                            aria-label="Select token to receive"
+                        >
+                            <span class="flex items-center gap-2">
+                                <ChainGlyph :chain="dstChain" size="sm" />
+                                <span class="text-foreground text-sm font-semibold">{{ CHAINS[dstChain].symbol }}</span>
+                            </span>
+                        </SelectTrigger>
+                        <SelectContent class="max-h-72">
+                            <SelectItem
+                                v-for="t in tokenOptions"
+                                :key="`dst-${t.id}`"
+                                :value="t.id"
+                                :disabled="t.id === srcChain"
+                            >
+                                <span class="flex items-center gap-2">
+                                    <ChainGlyph :chain="t.id" size="sm" />
+                                    <span class="text-foreground text-sm font-medium">{{ t.symbol }}</span>
+                                    <span class="text-vault-ink-dim text-xs">{{ t.name }}</span>
+                                    <span class="text-vault-ink-dim text-xs ml-auto pl-3">{{ formatCrypto(balances.get(t.id) ?? 0, CHAINS[t.id].decimals) }}</span>
+                                </span>
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <div class="ml-auto text-right">
                         <p class="text-vault-ink-dim text-sm">
-                            —
+                            ≈ {{ formatUsd(dstUsd ?? 0) }}
+                        </p>
+                        <p v-if="dstAmount" class="text-foreground text-xs font-medium">
+                            {{ dstAmount }} {{ CHAINS[dstChain].symbol }}
                         </p>
                     </div>
                 </div>
@@ -299,8 +368,9 @@ const summary = computed(() => {
                         placeholder="0.00"
                         class="flex-1 bg-transparent text-foreground text-lg font-semibold outline-none placeholder:text-vault-ink-dim"
                     />
-                    <span class="shrink-0 text-foreground text-sm font-medium">
-                        {{ CHAINS[srcChain].symbol }}
+                    <span class="shrink-0 text-right text-sm font-medium">
+                        <span class="text-foreground">{{ CHAINS[srcChain].symbol }}</span>
+                        <span v-if="srcUsd != null" class="text-vault-ink-dim"> · ≈ {{ formatUsd(srcUsd) }}</span>
                     </span>
                 </div>
 
@@ -310,6 +380,9 @@ const summary = computed(() => {
                         {{ dstAmount }}
                     </span>
                     {{ CHAINS[dstChain].symbol }}
+                    <template v-if="dstUsd != null">
+                        · <span class="text-foreground font-medium">{{ formatUsd(dstUsd) }}</span>
+                    </template>
                 </div>
             </div>
 

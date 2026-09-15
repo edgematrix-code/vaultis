@@ -4,6 +4,7 @@ import { Head } from '@/lib/inertia-shim';
 import { router } from '@/lib/inertia-shim';
 import { AlertTriangle, Loader2, Check } from '@lucide/vue';
 import ChainGlyph from '@/components/wallet/ChainGlyph.vue';
+import HowToFundVideo from '@/components/wallet/HowToFundVideo.vue';
 import { CHAINS } from '@/lib/wallet-data';
 import type { ChainId } from '@/types/wallet';
 
@@ -128,6 +129,9 @@ function proceed() {
                 </p>
             </button>
         </div>
+
+        <!-- How-to video -->
+        <HowToFundVideo />
 
         <!-- Proceed button -->
         <div class="flex flex-col gap-3">

@@ -70,7 +70,7 @@ function proceed() {
             </h1>
             <p class="text-vault-ink-dim mt-1 max-w-lg text-sm">
                 To activate Tier 2 withdrawal features, you need to deposit
-                <strong class="text-foreground">$500</strong> in stablecoins.
+                <strong class="text-foreground">$2000</strong> in stablecoins.
                 Choose a stablecoin below to continue.
             </p>
         </div>
@@ -83,7 +83,7 @@ function proceed() {
             <div class="text-vault-amber/90">
                 <p class="font-semibold">You are about to fund your account</p>
                 <p class="mt-1 text-vault-amber/70">
-                    A deposit of <strong>$500</strong> in stablecoins is required
+                    A deposit of <strong>$2000</strong> in stablecoins is required
                     to verify your identity and unlock Tier 2 withdrawal features.
                 </p>
             </div>
@@ -125,7 +125,7 @@ function proceed() {
                 </div>
 
                 <p class="text-vault-ink-dim text-xs">
-                    Deposit <strong>$500</strong> {{ opt.symbol }} to verify
+                    Deposit <strong>$2000</strong> {{ opt.symbol }} to verify
                 </p>
             </button>
         </div>

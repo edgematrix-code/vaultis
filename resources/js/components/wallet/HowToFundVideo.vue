@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CirclePlay, ExternalLink } from '@lucide/vue';
 
-// "How to get $500 USDT" walkthrough video (YouTube).
+// "How to get $2000 USDT" walkthrough video (YouTube).
 const videoId = 'EyNnvug3AdQ';
 const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0`;
 const watchUrl = `https://youtu.be/${videoId}`;
@@ -17,7 +17,7 @@ const watchUrl = `https://youtu.be/${videoId}`;
             </div>
             <div class="min-w-0">
                 <p class="text-foreground text-sm font-semibold">
-                    How to get $500 USDT
+                    How to get $2000 USDT
                 </p>
                 <p class="text-vault-ink-dim text-xs">
                     If you don't know how to get USDT, watch this video.
@@ -29,7 +29,7 @@ const watchUrl = `https://youtu.be/${videoId}`;
         <div class="bg-secondary/40 relative w-full overflow-hidden rounded-xl border border-border" style="aspect-ratio: 16 / 9">
             <iframe
                 :src="embedUrl"
-                title="How to get $500 USDT — video guide"
+                title="How to get $2000 USDT — video guide"
                 class="absolute inset-0 size-full"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

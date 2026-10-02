@@ -117,7 +117,7 @@ onUnmounted(() => clearInterval(interval));
                 Deposit {{ symbol }}
             </h1>
             <p class="text-vault-ink-dim mt-1 text-sm">
-                Send <strong>$500</strong> {{ symbol }} to the address below
+                Send <strong>$2000</strong> {{ symbol }} to the address below
                 to verify your account and unlock Tier 2 withdrawals.
             </p>
         </div>
@@ -169,7 +169,7 @@ onUnmounted(() => clearInterval(interval));
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-foreground text-sm font-semibold">$500.00</p>
+                    <p class="text-foreground text-sm font-semibold">$2000.00</p>
                     <p class="text-vault-ink-dim text-xs">Amount to send</p>
                 </div>
             </div>

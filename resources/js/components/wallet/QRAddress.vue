@@ -35,15 +35,21 @@ const qrSrc = computed(() => {
     <div
         class="border-border bg-card flex flex-col items-center gap-5 rounded-2xl border p-6 text-center sm:p-8"
     >
-        <div v-if="qrSrc" class="border-border rounded-2xl border bg-white p-4">
+        <div
+            v-if="qrSrc"
+            class="border-border w-full max-w-[248px] rounded-2xl border bg-white p-3"
+        >
             <img
                 :src="qrSrc"
                 :alt="`${CHAINS[chain].symbol} deposit QR`"
-                class="h-auto max-w-full"
+                class="h-auto w-full"
                 loading="lazy"
             />
         </div>
-        <div v-else class="border-border rounded-2xl border bg-white p-4">
+        <div
+            v-else
+            class="border-border w-full max-w-[248px] rounded-2xl border bg-white p-3"
+        >
             <p class="text-vault-ink-dim text-sm">
                 QR code unavailable
             </p>
